@@ -29,9 +29,9 @@ public class Player extends Movable implements Placeable {
     public void update(GameContainer container, int delta) {
         move(container, delta);
         //check if stand on door
-        if(room.getCurrentTile(this).getType() == Tile.DOOR_TILE){
+        if (room.getCurrentTile(this).getType() == Tile.DOOR_TILE) {
             System.out.println("Hit the door!");
-            Room nextRoom = map.nextRoom(this,room.getRoomId());
+            Room nextRoom = map.nextRoom(this, room.getRoomId());
             setRoom(nextRoom);
         }
     }
@@ -47,54 +47,17 @@ public class Player extends Movable implements Placeable {
     private void move(GameContainer container, int delta) {
         Input input = container.getInput();
         float moveFactor = speed * (delta / 100f);
-        Tile nextTile = null;
-        if (input.isKeyDown(Input.KEY_LEFT)) {
-            nextTile = room.findNextTile(this, Room.DIRECTION_WEST);
-            if (nextTile != null) {
-                if (nextTile.isWalkable()) {
-                    position.x -= moveFactor;
-                } else {
-                    if (Math.abs((nextTile.getPosition().x + nextTile.getWidth()) - position.x) >= 1) {
-                        position.x -= moveFactor;
-                    }
-                }
-            }
+        if (input.isKeyDown(Input.KEY_LEFT) && room.canMoveTo(this, Room.DIRECTION_WEST)) {
+            position.x -= moveFactor;
         }
-        if (input.isKeyDown(Input.KEY_RIGHT)) {
-            nextTile = room.findNextTile(this, Room.DIRECTION_EAST);
-            if (nextTile != null) {
-                if (nextTile.isWalkable()) {
-                    position.x += moveFactor;
-                } else {
-                    if (Math.abs((nextTile.getPosition().x) - (position.x)) >= getWidth() + 2) {
-                        position.x += moveFactor;
-                    }
-                }
-            }
+        if (input.isKeyDown(Input.KEY_RIGHT) && room.canMoveTo(this, Room.DIRECTION_EAST)) {
+            position.x += moveFactor;
         }
-        if (input.isKeyDown(Input.KEY_UP)) {
-            nextTile = room.findNextTile(this, Room.DIRECTION_NORTH);
-            if (nextTile != null) {
-                if (nextTile.isWalkable()) {
-                    position.y -= moveFactor;
-                } else {
-                    if (Math.abs((nextTile.getPosition().y + nextTile.getHeight()) - position.y) > 1) {
-                        position.y -= moveFactor;
-                    }
-                }
-            }
+        if (input.isKeyDown(Input.KEY_UP) && room.canMoveTo(this, Room.DIRECTION_NORTH)) {
+            position.y -= moveFactor;
         }
-        if (input.isKeyDown(Input.KEY_DOWN)) {
-            nextTile = room.findNextTile(this, Room.DIRECTION_SOUTH);
-            if (nextTile != null) {
-                if (nextTile.isWalkable()) {
-                    position.y += moveFactor;
-                } else {
-                    if (Math.abs((nextTile.getPosition().y) - (position.y)) >= getHeight() + 2) {
-                        position.y += moveFactor;
-                    }
-                }
-            }
+        if (input.isKeyDown(Input.KEY_DOWN) && room.canMoveTo(this, Room.DIRECTION_SOUTH)) {
+            position.y += moveFactor;
         }
     }
 
@@ -105,8 +68,6 @@ public class Player extends Movable implements Placeable {
     public void setMap(Map map) {
         this.map = map;
     }
-    
-    
 
     @Override
     public float getWidth() {

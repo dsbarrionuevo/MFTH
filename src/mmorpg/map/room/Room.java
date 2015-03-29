@@ -125,6 +125,28 @@ public class Room {
         return foundTile;
     }
 
+    public boolean canMoveTo(Placeable placeable, int direction) {
+        Tile nextTile = this.findNextTile(placeable, direction);
+        Vector2f position = placeable.getPosition();
+        if (nextTile != null) {
+            if (nextTile.isWalkable()) {
+                return true;
+            } else {
+                switch (direction) {
+                    case (DIRECTION_WEST):
+                        return (Math.abs((nextTile.getPosition().x + nextTile.getWidth()) - position.x) >= 1);
+                    case (DIRECTION_EAST):
+                        return (Math.abs((nextTile.getPosition().x) - (position.x)) >= placeable.getWidth() + 2);
+                    case (DIRECTION_NORTH):
+                        return (Math.abs((nextTile.getPosition().y + nextTile.getHeight()) - position.y) > 1);
+                    case (DIRECTION_SOUTH):
+                        return (Math.abs((nextTile.getPosition().y) - (position.y)) >= placeable.getHeight() + 2);
+                }
+            }
+        }
+        return false;
+    }
+
     public int getRoomWidth() {
         return roomWidth;
     }

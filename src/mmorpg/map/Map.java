@@ -32,11 +32,19 @@ public class Map {
         return this.rooms[room].placeObject(placeable, tileX, tileY);
     }
 
+    public boolean placeObject(Placeable placeable, int tileX, int tileY) {
+        return this.placeObject(placeable, this.currentRoom, tileX, tileY);
+    }
+
     public Room getRoom(int room) {
         if (room < 0 || room > rooms.length - 1) {
             return null;
         }
         return this.rooms[room];
+    }
+
+    public Room getCurrentRoom() {
+        return this.getRoom(this.currentRoom);
     }
 
     public Room nextRoom(Placeable placeable, int currentRoomId) {

@@ -8,6 +8,7 @@ import mmorpg.player.Player;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import mmorpg.enemies.Enemy;
+import mmorpg.enemies.SmartWallEnemy;
 import org.newdawn.slick.AppGameContainer;
 import org.newdawn.slick.BasicGame;
 import org.newdawn.slick.GameContainer;
@@ -41,21 +42,20 @@ public class MMORPG extends BasicGame {
         map = new Map(3);
         player = new Player();
         player.setMap(map);
-        player.setRoom(map.getRoom(0));
-        map.placeObject(player, 0, 13, 6);
+        player.setRoom(map.getCurrentRoom());
+        map.placeObject(player, 13, 6);
         /*
          treasure = new Treasure();
-         map.placeObject(treasure, 14, 10);
-         enemies = new ArrayList<>();
-         for (int i = 0; i < 0; i++) {
-         Enemy newEnemy = new SmartWallEnemy();
-         ((SmartWallEnemy) newEnemy).setMap(map);
-         map.placeObject(newEnemy,
-         ((int) (Math.random() * 14) + 1),
-         ((int) (Math.random() * 10) + 1));
-         enemies.add(newEnemy);
-         }
-         */
+         map.placeObject(treasure, 14, 10);*/
+        enemies = new ArrayList<>();
+        for (int i = 0; i < 4; i++) {
+            Enemy newEnemy = new SmartWallEnemy();
+            ((SmartWallEnemy) newEnemy).setRoom(map.getCurrentRoom());
+            map.placeObject(newEnemy,
+                    ((int) (Math.random() * 14) + 1),
+                    ((int) (Math.random() * 10) + 1));
+            enemies.add(newEnemy);
+        }
         //
         message = new TimedMessage(new Vector2f(10f, 10f), "Welcome");
     }
@@ -63,23 +63,22 @@ public class MMORPG extends BasicGame {
     @Override
     public void update(GameContainer container, int delta) throws SlickException {
         player.update(container, delta);
-        
-        /*
-         for (Enemy enemy : enemies) {
-         enemy.update(container, delta);
-         if (player.collide(enemy)) {
-         message.changeMessage("Player got killed by enemy...");
-         }
-            
+        for (Enemy enemy : enemies) {
+            enemy.update(container, delta);
+            if (player.collide(enemy)) {
+                message.changeMessage("Player got killed by enemy...");
+            }
+
          //            for (Enemy otherEnemy : enemies) {
-         //                if (enemy != otherEnemy) {
-         //                    if (enemy.collide(otherEnemy)) {
-         //                        ((WallEnemy)enemy).changeToOppositeDirection();
-         //                        ((WallEnemy)otherEnemy).changeToOppositeDirection();
-         //                    }
-         //                }
-         //            }
-         }
+            //                if (enemy != otherEnemy) {
+            //                    if (enemy.collide(otherEnemy)) {
+            //                        ((WallEnemy)enemy).changeToOppositeDirection();
+            //                        ((WallEnemy)otherEnemy).changeToOppositeDirection();
+            //                    }
+            //                }
+            //            }
+        }
+        /*
          //
          if (player.collide(treasure)) {
          message.changeMessage("Player took the treasure!");
@@ -93,11 +92,11 @@ public class MMORPG extends BasicGame {
     public void render(GameContainer container, Graphics g) throws SlickException {
         map.render(container, g);
         player.render(container, g);
-        /*treasure.render(container, g);
-         for (Enemy enemy : enemies) {
-         enemy.render(container, g);
-         }
-         message.render(container, g);*/
+        /*treasure.render(container, g);*/
+        for (Enemy enemy : enemies) {
+            enemy.render(container, g);
+        }
+        message.render(container, g);
     }
 
     public static void main(String[] args) {
