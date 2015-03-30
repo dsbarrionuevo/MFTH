@@ -19,7 +19,7 @@ public abstract class Tile extends Drawable {
 
     protected Color color;
     protected boolean walkable;
-    
+
     protected int tileX, tileY;
 
     public Tile(Vector2f position, float width, float height, Color color, boolean walkable) {
@@ -59,7 +59,5 @@ public abstract class Tile extends Drawable {
     public void setTileY(int tileY) {
         this.tileY = tileY;
     }
-    
-    
 
 }

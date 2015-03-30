@@ -55,6 +55,7 @@ public class Room {
     }
 
     public void render(GameContainer container, Graphics g) throws SlickException {
+        //when using camera logic, this should be optimized
         for (int i = 0; i < room.length; i++) {
             for (int j = 0; j < room[0].length; j++) {
                 room[i][j].render(container, g);
@@ -62,6 +63,7 @@ public class Room {
         }
     }
 
+    @Deprecated
     public void move(Vector2f newPosition) {
         for (int i = 0; i < room.length; i++) {
             for (int j = 0; j < room[0].length; j++) {
@@ -70,7 +72,7 @@ public class Room {
         }
     }
 
-    public Tile getByPositionInMap(int tileX, int tileY) {
+    public Tile getByPositionInRoom(int tileX, int tileY) {
         return room[tileY][tileX];
     }
 
@@ -98,8 +100,9 @@ public class Room {
 
     public Tile findNextTile(Placeable placeable, int direction) {
         Tile foundTile = null;
-        int tileX = (int) (Math.floor((placeable.getPosition().x) / tileWidth));
-        int tileY = (int) (Math.floor((placeable.getPosition().y) / tileHeight));
+        Tile currentTile = getCurrentTile(placeable);
+        int tileX = currentTile.getTileX();
+        int tileY = currentTile.getTileY();
         switch (direction) {
             case (DIRECTION_WEST):
                 if (tileX - 1 >= 0) {
@@ -145,6 +148,13 @@ public class Room {
             }
         }
         return false;
+    }
+
+    public void hitTheDoor(Placeable placeable) {
+        if (getCurrentTile(placeable).getType() == Tile.DOOR_TILE) {
+            //Room nextRoom = map.nextRoom(placeable, room.getRoomId());
+            //placeable.setRoom(nextRoom);
+        }
     }
 
     public int getRoomWidth() {

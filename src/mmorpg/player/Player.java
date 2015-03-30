@@ -30,9 +30,6 @@ public class Player extends Movable implements Placeable {
         move(container, delta);
         //check if stand on door
         if (room.getCurrentTile(this).getType() == Tile.DOOR_TILE) {
-            System.out.println("Hit the door!");
-            Room nextRoom = map.nextRoom(this, room.getRoomId());
-            setRoom(nextRoom);
         }
     }
 
