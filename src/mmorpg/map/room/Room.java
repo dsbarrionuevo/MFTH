@@ -1,6 +1,7 @@
 package mmorpg.map.room;
 
 import mmorpg.common.Placeable;
+import mmorpg.map.Map;
 import mmorpg.map.room.buildingstrategies.RoomBuildingStrategy;
 import mmorpg.map.tiles.DoorTile;
 import mmorpg.map.tiles.Tile;
@@ -24,6 +25,8 @@ public class Room {
     private RoomBuildingStrategy buildingStrategy;
     private final float tileWidth, tileHeight;
     private int roomId, roomWidth, roomHeight;
+    //
+    private Map map;
 
     public Room(int roomId, RoomBuildingStrategy buildingStrategy) {
         this.roomId = roomId;
@@ -45,10 +48,10 @@ public class Room {
         }
     }
 
-    public boolean putDoor(int tileX, int tileY) {
+    public boolean putDoor(Room fromRoom, Room toRoom, int tileX, int tileY) {
         //only on borders...
         if ((tileX == 0 || tileX == room[0].length - 1) || (tileY == 0 || tileY == room.length - 1)) {
-            room[tileY][tileX] = new DoorTile(new Vector2f(tileX * tileWidth, tileY * tileHeight), tileWidth, tileHeight);
+            room[tileY][tileX] = new DoorTile(fromRoom, toRoom, new Vector2f(tileX * tileWidth, tileY * tileHeight), tileWidth, tileHeight);
             return true;
         }
         return false;
@@ -152,7 +155,7 @@ public class Room {
 
     public void hitTheDoor(Placeable placeable) {
         if (getCurrentTile(placeable).getType() == Tile.DOOR_TILE) {
-            //Room nextRoom = map.nextRoom(placeable, room.getRoomId());
+            Room nextRoom = map.nextRoom(placeable);
             //placeable.setRoom(nextRoom);
         }
     }
@@ -167,6 +170,10 @@ public class Room {
 
     public int getRoomId() {
         return roomId;
+    }
+
+    public void setMap(Map map) {
+        this.map = map;
     }
 
 }

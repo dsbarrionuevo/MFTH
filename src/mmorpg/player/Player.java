@@ -19,7 +19,6 @@ import org.newdawn.slick.geom.Vector2f;
 public class Player extends Movable implements Placeable {
 
     private Room room;
-    private Map map;
 
     public Player() {
         super(10f, new Vector2f(), new Rectangle(0, 0, 20, 20));
@@ -30,6 +29,7 @@ public class Player extends Movable implements Placeable {
         move(container, delta);
         //check if stand on door
         if (room.getCurrentTile(this).getType() == Tile.DOOR_TILE) {
+
         }
     }
 
@@ -62,10 +62,6 @@ public class Player extends Movable implements Placeable {
         this.room = room;
     }
 
-    public void setMap(Map map) {
-        this.map = map;
-    }
-
     @Override
     public float getWidth() {
         return width;
@@ -84,6 +80,11 @@ public class Player extends Movable implements Placeable {
     @Override
     public Vector2f getPosition() {
         return position;
+    }
+
+    @Override
+    public Room getRoom() {
+        return this.room;
     }
 
 }

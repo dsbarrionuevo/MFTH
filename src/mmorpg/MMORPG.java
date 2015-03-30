@@ -39,9 +39,8 @@ public class MMORPG extends BasicGame {
 
     @Override
     public void init(GameContainer container) throws SlickException {
-        map = new Map(3);
+        map = new Map(1);
         player = new Player();
-        player.setMap(map);
         player.setRoom(map.getCurrentRoom());
         map.placeObject(player, 13, 6);
         /*
@@ -82,10 +81,10 @@ public class MMORPG extends BasicGame {
          //
          if (player.collide(treasure)) {
          message.changeMessage("Player took the treasure!");
-         }
+         }*/
          //
          message.update(delta);
-         */
+         
     }
 
     @Override

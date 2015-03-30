@@ -1,5 +1,6 @@
 package mmorpg.map.buildingstrategies;
 
+import mmorpg.map.Map;
 import mmorpg.map.room.Room;
 
 /**
@@ -17,6 +18,6 @@ public abstract class MapBuildingStrategy {
         this.roomsCount = roomsCount;
     }
 
-    public abstract Room[] build();
+    public abstract Room[] build(Map map);
 
 }

@@ -60,4 +60,13 @@ public abstract class Tile extends Drawable {
         this.tileY = tileY;
     }
 
+    public String getId() {
+        return this.getTileX() + "_" + this.getTileY();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return ((Tile) obj).getId().equalsIgnoreCase(this.getId());
+    }
+
 }

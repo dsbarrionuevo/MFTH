@@ -95,4 +95,9 @@ public class WallEnemy extends Enemy {
     public void setRoom(Room room) {
         this.room = room;
     }
+
+    @Override
+    public Room getRoom() {
+        return this.room;
+    }
 }

@@ -2,12 +2,11 @@ package mmorpg.items;
 
 import mmorpg.common.Drawable;
 import mmorpg.common.Placeable;
+import mmorpg.map.room.Room;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
-import org.newdawn.slick.SlickException;
 import org.newdawn.slick.geom.Circle;
-import org.newdawn.slick.geom.Shape;
 import org.newdawn.slick.geom.Vector2f;
 
 /**
@@ -16,6 +15,9 @@ import org.newdawn.slick.geom.Vector2f;
  */
 public class Treasure extends Drawable implements Placeable {
 
+    private Room room;
+
+    //
     public Treasure() {
         super(new Vector2f(), new Circle(0, 0, 10));
     }
@@ -48,6 +50,16 @@ public class Treasure extends Drawable implements Placeable {
     @Override
     public float getHeight() {
         return this.height;
+    }
+
+    @Override
+    public void setRoom(Room room) {
+        this.room = room;
+    }
+
+    @Override
+    public Room getRoom() {
+        return this.room;
     }
 
 }

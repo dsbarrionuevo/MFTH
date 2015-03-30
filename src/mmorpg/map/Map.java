@@ -20,7 +20,7 @@ public class Map {
 
     public Map(int roomsCount) {
         this.buildingStrategy = new SingleRowMapBuildingStrategy(SingleRowMapBuildingStrategy.ORIENTATION_HORIZONTAL, roomsCount, 50, 50);
-        this.rooms = buildingStrategy.build();
+        this.rooms = buildingStrategy.build(this);
         this.currentRoom = 0;
     }
 
@@ -47,10 +47,15 @@ public class Map {
         return this.getRoom(this.currentRoom);
     }
 
-    public Room nextRoom(Placeable placeable, int currentRoomId) {
+    public Room nextRoom(Placeable placeable) {
+        Room currentRoom = placeable.getRoom();
+        
         //... siempre avanza a la siguiente sala...
-        this.currentRoom = currentRoomId + 1;
-        this.rooms[currentRoom].placeObject(placeable, 1, 1);
-        return this.rooms[currentRoom];
+        /*
+         this.currentRoom = currentRoomId + 1;
+         this.rooms[currentRoom].placeObject(placeable, 1, 1);
+         return this.rooms[currentRoom];
+         */
+        return null;
     }
 }

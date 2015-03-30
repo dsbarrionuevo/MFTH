@@ -1,9 +1,9 @@
 package mmorpg.map.buildingstrategies;
 
+import mmorpg.map.Map;
 import mmorpg.map.room.Room;
 import mmorpg.map.room.buildingstrategies.BorderRoomBuildingStrategy;
 import mmorpg.map.room.buildingstrategies.RoomBuildingStrategy;
-import mmorpg.map.tiles.Tile;
 
 /**
  *
@@ -22,35 +22,36 @@ public class SingleRowMapBuildingStrategy extends MapBuildingStrategy {
     }
 
     @Override
-    public Room[] build() {
-        Room[] map = new Room[roomsCount];
+    public Room[] build(Map map) {
+        Room[] rooms = new Room[roomsCount];
         int widthRoom = 16;
         int heightRoom = 12;
         if (this.orientation == ORIENTATION_HORIZONTAL) {
-            for (int i = 0; i < map.length; i++) {
+            for (int i = 0; i < rooms.length; i++) {
                 RoomBuildingStrategy roomBuildingStrategy = new BorderRoomBuildingStrategy(widthRoom, heightRoom, tileWidth, tileHeight);
-                Room newRoom = new Room(i,roomBuildingStrategy);
-                if (i >= 0 && i != map.length - 1) {
-                    newRoom.putDoor(newRoom.getRoomWidth() - 1, 6);
+                Room newRoom = new Room(i, roomBuildingStrategy);
+                newRoom.setMap(map);
+                if (i >= 0 && i != rooms.length - 1) {
+                    newRoom.putDoor(rooms[i], rooms[i + 1], newRoom.getRoomWidth() - 1, 6);
                 }
-                if (i <= map.length - 1 && i != 0) {
-                    newRoom.putDoor(0, 6);
+                if (i <= rooms.length - 1 && i != 0) {
+                    newRoom.putDoor(rooms[i], rooms[i - 1], 0, 6);
                 }
-                map[i] = newRoom;
+                rooms[i] = newRoom;
             }
         } else if (this.orientation == ORIENTATION_VERTICAL) {
-            for (int i = 0; i < map.length; i++) {
+            for (int i = 0; i < rooms.length; i++) {
                 RoomBuildingStrategy roomBuildingStrategy = new BorderRoomBuildingStrategy(widthRoom, heightRoom, tileWidth, tileHeight);
-                Room newRoom = new Room(i,roomBuildingStrategy);
-                if (i >= 0 && i != map.length - 1) {
-                    newRoom.putDoor(8, newRoom.getRoomHeight()-1);
+                Room newRoom = new Room(i, roomBuildingStrategy);
+                if (i >= 0 && i != rooms.length - 1) {
+                    newRoom.putDoor(rooms[i], rooms[i + 1], 8, newRoom.getRoomHeight() - 1);
                 }
-                if (i <= map.length - 1 && i != 0) {
-                    newRoom.putDoor(8, 0);
+                if (i <= rooms.length - 1 && i != 0) {
+                    newRoom.putDoor(rooms[i], rooms[i - 1], 8, 0);
                 }
-                map[i] = newRoom;
+                rooms[i] = newRoom;
             }
         }
-        return map;
+        return rooms;
     }
 }
