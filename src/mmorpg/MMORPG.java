@@ -7,6 +7,7 @@ import mmorpg.items.Treasure;
 import mmorpg.player.Player;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import mmorpg.camera.Camera;
 import mmorpg.enemies.Enemy;
 import mmorpg.enemies.SmartWallEnemy;
 import org.newdawn.slick.AppGameContainer;
@@ -39,6 +40,7 @@ public class MMORPG extends BasicGame {
 
     @Override
     public void init(GameContainer container) throws SlickException {
+        Camera.createCamera(new Vector2f(0f, 0f), container.getWidth(), container.getHeight());
         map = new Map(3);
         player = new Player();
         map.placeObject(player, 12, 1);
@@ -46,7 +48,7 @@ public class MMORPG extends BasicGame {
          treasure = new Treasure();
          map.placeObject(treasure, 14, 10);*/
         enemies = new ArrayList<>();
-        for (int i = 0; i < 0; i++) {
+        for (int i = 0; i < 1; i++) {
             Enemy newEnemy = new SmartWallEnemy();
             ((SmartWallEnemy) newEnemy).setRoom(map.getCurrentRoom());
             map.placeObject(newEnemy,
@@ -67,7 +69,7 @@ public class MMORPG extends BasicGame {
                 message.changeMessage("Player got killed by enemy...");
             }
 
-         //            for (Enemy otherEnemy : enemies) {
+            //            for (Enemy otherEnemy : enemies) {
             //                if (enemy != otherEnemy) {
             //                    if (enemy.collide(otherEnemy)) {
             //                        ((WallEnemy)enemy).changeToOppositeDirection();
@@ -81,9 +83,9 @@ public class MMORPG extends BasicGame {
          if (player.collide(treasure)) {
          message.changeMessage("Player took the treasure!");
          }*/
-         //
-         message.update(delta);
-         
+        //
+        message.update(delta);
+
     }
 
     @Override

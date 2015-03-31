@@ -1,6 +1,7 @@
 package mmorpg.map.room;
 
 import java.util.ArrayList;
+import mmorpg.camera.Camera;
 import mmorpg.common.Placeable;
 import mmorpg.map.Map;
 import mmorpg.map.room.buildingstrategies.RoomBuildingStrategy;
@@ -28,6 +29,8 @@ public class Room {
     private int roomId, roomWidth, roomHeight;
     private ArrayList<Room> passages;
     //
+    private Camera camera;
+    private Vector2f offset;
     private Map map;
 
     public Room(int roomId, RoomBuildingStrategy buildingStrategy) {
@@ -36,6 +39,8 @@ public class Room {
         this.tileHeight = 50;
         this.buildingStrategy = buildingStrategy;
         this.passages = new ArrayList<>();
+        this.camera = Camera.getInstance();
+        this.offset = new Vector2f();
         this.build();
     }
 
@@ -85,6 +90,14 @@ public class Room {
             }
         }
     }
+    
+     public void moveY(float factor) {
+        for (int i = 0; i < room.length; i++) {
+            for (int j = 0; j < room[0].length; j++) {
+                room[i][j].getPosition().y += factor;
+            }
+        }
+    }
 
     public Tile getByPositionInRoom(int tileX, int tileY) {
         return room[tileY][tileX];
@@ -105,8 +118,14 @@ public class Room {
         Tile foundTile = null;
         //int tileX = (int) (Math.floor((placeable.getPosition().x + placeable.getWidth() / 2 - tileWidth / 2) / tileWidth));
         //int tileY = (int) (Math.floor((placeable.getPosition().y + placeable.getHeight()/2 - tileHeight/2) / tileHeight));
-        int tileX = (int) (Math.floor((placeable.getPosition().x) / tileWidth));
-        int tileY = (int) (Math.floor((placeable.getPosition().y) / tileHeight));
+        /*int tileX = (int) (Math.floor((placeable.getPosition().x) / tileWidth));
+         int tileY = (int) (Math.floor((placeable.getPosition().y) / tileHeight));*/
+        Vector2f absolutePosition = new Vector2f(
+                Math.abs(this.offset.x - room[0][0].getPosition().x) + placeable.getPosition().x, 
+                Math.abs(this.offset.y - room[0][0].getPosition().y) + placeable.getPosition().y
+        );
+        int tileX = (int) (Math.floor((absolutePosition.x) / tileWidth));
+        int tileY = (int) (Math.floor((absolutePosition.y) / tileHeight));
         foundTile = room[tileY][tileX];
         System.out.println("Current tileX: " + tileX + ", tileY: " + tileY);
         return foundTile;
@@ -208,6 +227,10 @@ public class Room {
 
     public void setMap(Map map) {
         this.map = map;
+    }
+
+    public void setCamera(Camera camera) {
+        this.camera = camera;
     }
 
 }

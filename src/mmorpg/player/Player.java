@@ -1,10 +1,8 @@
 package mmorpg.player;
 
 import mmorpg.common.Movable;
-import mmorpg.map.Map;
 import mmorpg.common.Placeable;
 import mmorpg.map.room.Room;
-import mmorpg.map.tiles.Tile;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
@@ -21,7 +19,7 @@ public class Player extends Movable implements Placeable{
     private Room room;
 
     public Player() {
-        super(10f, new Vector2f(), new Rectangle(0, 0, 20, 20));
+        super(30f, new Vector2f(), new Rectangle(0, 0, 20, 20));
     }
 
     @Override
@@ -42,7 +40,11 @@ public class Player extends Movable implements Placeable{
         Input input = container.getInput();
         float moveFactor = speed * (delta / 100f);
         if (input.isKeyDown(Input.KEY_LEFT) && room.canMoveTo(this, Room.DIRECTION_WEST)) {
-            position.x -= moveFactor;
+            if (position.x < 65) {
+                room.moveX(moveFactor);
+            } else {
+                position.x -= moveFactor;
+            }
         }
         if (input.isKeyDown(Input.KEY_RIGHT) && room.canMoveTo(this, Room.DIRECTION_EAST)) {
             if (position.x > 715) {
@@ -52,10 +54,18 @@ public class Player extends Movable implements Placeable{
             }
         }
         if (input.isKeyDown(Input.KEY_UP) && room.canMoveTo(this, Room.DIRECTION_NORTH)) {
-            position.y -= moveFactor;
+            if (position.y < 65) {
+                room.moveY(moveFactor);
+            } else {
+                position.y -= moveFactor;
+            }
         }
         if (input.isKeyDown(Input.KEY_DOWN) && room.canMoveTo(this, Room.DIRECTION_SOUTH)) {
-            position.y += moveFactor;
+            if (position.y > 515) {
+                room.moveY(moveFactor * (-1));
+            } else {
+                position.y += moveFactor;
+            }
         }
     }
 
