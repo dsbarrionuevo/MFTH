@@ -24,8 +24,8 @@ public class SingleRowMapBuildingStrategy extends MapBuildingStrategy {
     @Override
     public Room[] build(Map map) {
         Room[] rooms = new Room[roomsCount];
-        int widthRoom = 16;
-        int heightRoom = 12;
+        int widthRoom = 20;
+        int heightRoom = 20;
         if (this.orientation == ORIENTATION_HORIZONTAL) {
             for (int i = 0; i < rooms.length; i++) {
                 RoomBuildingStrategy roomBuildingStrategy = new BorderRoomBuildingStrategy(widthRoom, heightRoom, tileWidth, tileHeight);

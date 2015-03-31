@@ -1,5 +1,6 @@
 package mmorpg.map.room;
 
+import java.util.ArrayList;
 import mmorpg.common.Placeable;
 import mmorpg.map.Map;
 import mmorpg.map.room.buildingstrategies.RoomBuildingStrategy;
@@ -25,6 +26,7 @@ public class Room {
     private RoomBuildingStrategy buildingStrategy;
     private final float tileWidth, tileHeight;
     private int roomId, roomWidth, roomHeight;
+    private ArrayList<Room> passages;
     //
     private Map map;
 
@@ -33,6 +35,7 @@ public class Room {
         this.tileWidth = 50;
         this.tileHeight = 50;
         this.buildingStrategy = buildingStrategy;
+        this.passages = new ArrayList<>();
         this.build();
     }
 
@@ -75,6 +78,14 @@ public class Room {
         }
     }
 
+    public void moveX(float factor) {
+        for (int i = 0; i < room.length; i++) {
+            for (int j = 0; j < room[0].length; j++) {
+                room[i][j].getPosition().x += factor;
+            }
+        }
+    }
+
     public Tile getByPositionInRoom(int tileX, int tileY) {
         return room[tileY][tileX];
     }
@@ -97,7 +108,7 @@ public class Room {
         int tileX = (int) (Math.floor((placeable.getPosition().x) / tileWidth));
         int tileY = (int) (Math.floor((placeable.getPosition().y) / tileHeight));
         foundTile = room[tileY][tileX];
-        //System.out.println("Current tileX: " + tileX + ", tileY: " + tileY);
+        System.out.println("Current tileX: " + tileX + ", tileY: " + tileY);
         return foundTile;
     }
 
@@ -157,6 +168,29 @@ public class Room {
         if (getCurrentTile(placeable).getType() == Tile.DOOR_TILE) {
             Room nextRoom = map.nextRoom(placeable);
             //placeable.setRoom(nextRoom);
+        }
+    }
+
+    public Tile[] getTilesOfType(int tileType) {
+        Tile[] result = null;
+        ArrayList<Tile> foundTiles = new ArrayList<>();
+        for (int i = 0; i < this.room.length; i++) {
+            for (int j = 0; j < this.room[0].length; j++) {
+                Tile currentTile = this.room[i][j];
+                if (currentTile.getType() == tileType) {
+                    foundTiles.add(currentTile);
+                }
+            }
+        }
+        result = (Tile[]) foundTiles.toArray();
+        return result;
+    }
+
+    public void addPassage(Room connectedTo) {
+        for (Room passage : passages) {
+            if (!passage.equals(connectedTo)) {
+                this.passages.add(connectedTo);
+            }
         }
     }
 

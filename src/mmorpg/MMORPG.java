@@ -39,15 +39,14 @@ public class MMORPG extends BasicGame {
 
     @Override
     public void init(GameContainer container) throws SlickException {
-        map = new Map(1);
+        map = new Map(3);
         player = new Player();
-        player.setRoom(map.getCurrentRoom());
-        map.placeObject(player, 13, 6);
+        map.placeObject(player, 12, 1);
         /*
          treasure = new Treasure();
          map.placeObject(treasure, 14, 10);*/
         enemies = new ArrayList<>();
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 0; i++) {
             Enemy newEnemy = new SmartWallEnemy();
             ((SmartWallEnemy) newEnemy).setRoom(map.getCurrentRoom());
             map.placeObject(newEnemy,

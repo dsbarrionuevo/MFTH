@@ -29,6 +29,7 @@ public class Map {
     }
 
     public boolean placeObject(Placeable placeable, int room, int tileX, int tileY) {
+        placeable.setRoom(this.rooms[room]);
         return this.rooms[room].placeObject(placeable, tileX, tileY);
     }
 

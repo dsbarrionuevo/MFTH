@@ -16,4 +16,30 @@ public interface Placeable {
     public void setRoom(Room room);
     public Room getRoom();
     
-}
+}/*
+public abstract class Placeable extends Drawable {
+
+    protected Vector2f position;
+    protected Room room;
+
+    public Placeable(Vector2f position, Shape body, boolean visible) {
+        super(position, body, visible);
+    }
+
+    public float getWidth() {
+        return super.getWidth();
+    }
+
+    public float getHeight() {
+        return super.getHeight();
+    }
+
+    public Room getRoom() {
+        return room;
+    }
+
+    public void setRoom(Room room) {
+        this.room = room;
+    }
+
+}*/

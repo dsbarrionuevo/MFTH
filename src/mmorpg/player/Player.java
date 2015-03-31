@@ -16,7 +16,7 @@ import org.newdawn.slick.geom.Vector2f;
  *
  * @author Diego
  */
-public class Player extends Movable implements Placeable {
+public class Player extends Movable implements Placeable{
 
     private Room room;
 
@@ -28,9 +28,6 @@ public class Player extends Movable implements Placeable {
     public void update(GameContainer container, int delta) {
         move(container, delta);
         //check if stand on door
-        if (room.getCurrentTile(this).getType() == Tile.DOOR_TILE) {
-
-        }
     }
 
     @Override
@@ -48,7 +45,11 @@ public class Player extends Movable implements Placeable {
             position.x -= moveFactor;
         }
         if (input.isKeyDown(Input.KEY_RIGHT) && room.canMoveTo(this, Room.DIRECTION_EAST)) {
-            position.x += moveFactor;
+            if (position.x > 715) {
+                room.moveX(moveFactor * (-1));
+            } else {
+                position.x += moveFactor;
+            }
         }
         if (input.isKeyDown(Input.KEY_UP) && room.canMoveTo(this, Room.DIRECTION_NORTH)) {
             position.y -= moveFactor;
