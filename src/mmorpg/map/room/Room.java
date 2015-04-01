@@ -127,7 +127,7 @@ public class Room {
         int tileX = (int) (Math.floor((absolutePosition.x) / tileWidth));
         int tileY = (int) (Math.floor((absolutePosition.y) / tileHeight));
         foundTile = room[tileY][tileX];
-        System.out.println("Current tileX: " + tileX + ", tileY: " + tileY);
+        //System.out.println("Current tileX: " + tileX + ", tileY: " + tileY);
         return foundTile;
     }
 
@@ -189,27 +189,37 @@ public class Room {
         //65 = 50 + 25 - 10
         //   = 50*1 + 50/2 - 20/2
         //   = tileWidth*tilesPadding + tileWidth/2 + placeble.getWidth()/2
+        float limit = 0f;
+        float definedLimit = tileWidth * camera.getPadding() + tileWidth / 2 + placeable.getWidth() / 2;
         switch (direction) {
             case (DIRECTION_WEST):
-                if (position.x < 65) {
+                limit = definedLimit;
+                if (position.x < limit) {
                     moveX(distanceMoving);
                     allowMoving = false;
                 }
+                break;
             case (DIRECTION_EAST):
-                if (position.x > 715) {
+                limit = camera.getWidth() - definedLimit;
+                if (position.x > limit) {
                     moveX(distanceMoving * (-1));
                     allowMoving = false;
                 }
+                break;
             case (DIRECTION_NORTH):
-                if (position.y < 65) {
+                limit = definedLimit;
+                if (position.y < limit) {
                     moveY(distanceMoving);
                     allowMoving = false;
                 }
+                break;
             case (DIRECTION_SOUTH):
-                if (position.y > 515) {
+                limit = camera.getHeight() - definedLimit;
+                if (position.y > limit) {
                     moveY(distanceMoving * (-1));
                     allowMoving = false;
                 }
+                break;
         }
         return allowMoving;
     }
