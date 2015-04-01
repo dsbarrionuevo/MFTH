@@ -90,8 +90,8 @@ public class Room {
             }
         }
     }
-    
-     public void moveY(float factor) {
+
+    public void moveY(float factor) {
         for (int i = 0; i < room.length; i++) {
             for (int j = 0; j < room[0].length; j++) {
                 room[i][j].getPosition().y += factor;
@@ -121,7 +121,7 @@ public class Room {
         /*int tileX = (int) (Math.floor((placeable.getPosition().x) / tileWidth));
          int tileY = (int) (Math.floor((placeable.getPosition().y) / tileHeight));*/
         Vector2f absolutePosition = new Vector2f(
-                Math.abs(this.offset.x - room[0][0].getPosition().x) + placeable.getPosition().x, 
+                Math.abs(this.offset.x - room[0][0].getPosition().x) + placeable.getPosition().x,
                 Math.abs(this.offset.y - room[0][0].getPosition().y) + placeable.getPosition().y
         );
         int tileX = (int) (Math.floor((absolutePosition.x) / tileWidth));
@@ -181,6 +181,37 @@ public class Room {
             }
         }
         return false;
+    }
+
+    public boolean movingInsideCamera(Placeable placeable, float distanceMoving, int direction) {
+        Vector2f position = placeable.getPosition();
+        boolean allowMoving = true;
+        //65 = 50 + 25 - 10
+        //   = 50*1 + 50/2 - 20/2
+        //   = tileWidth*tilesPadding + tileWidth/2 + placeble.getWidth()/2
+        switch (direction) {
+            case (DIRECTION_WEST):
+                if (position.x < 65) {
+                    moveX(distanceMoving);
+                    allowMoving = false;
+                }
+            case (DIRECTION_EAST):
+                if (position.x > 715) {
+                    moveX(distanceMoving * (-1));
+                    allowMoving = false;
+                }
+            case (DIRECTION_NORTH):
+                if (position.y < 65) {
+                    moveY(distanceMoving);
+                    allowMoving = false;
+                }
+            case (DIRECTION_SOUTH):
+                if (position.y > 515) {
+                    moveY(distanceMoving * (-1));
+                    allowMoving = false;
+                }
+        }
+        return allowMoving;
     }
 
     public void hitTheDoor(Placeable placeable) {

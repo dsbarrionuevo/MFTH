@@ -48,7 +48,7 @@ public class MMORPG extends BasicGame {
          treasure = new Treasure();
          map.placeObject(treasure, 14, 10);*/
         enemies = new ArrayList<>();
-        for (int i = 0; i < 1; i++) {
+        for (int i = 0; i < 0; i++) {
             Enemy newEnemy = new SmartWallEnemy();
             ((SmartWallEnemy) newEnemy).setRoom(map.getCurrentRoom());
             map.placeObject(newEnemy,

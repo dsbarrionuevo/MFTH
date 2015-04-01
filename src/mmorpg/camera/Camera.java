@@ -12,6 +12,7 @@ public class Camera {
     private Rectangle visor;
     //
     private static Camera me;
+    private int padding;//number of tiles to allow see
 
     public static Camera getInstance() {
         if (me == null) {
@@ -33,10 +34,10 @@ public class Camera {
         this.visor = new Rectangle(initPosition.x, initPosition.y, width, height);
     }
 
-    public void setPositionX(float x){
+    public void setPositionX(float x) {
         this.visor.setX(x);
     }
-    
+
     public Vector2f getPosition() {
         return new Vector2f(visor.getX(), visor.getY());
     }
@@ -55,6 +56,14 @@ public class Camera {
 
     public float getHeight() {
         return visor.getHeight();
+    }
+
+    public int getPadding() {
+        return padding;
+    }
+
+    public void setPadding(int padding) {
+        this.padding = padding;
     }
 
 }

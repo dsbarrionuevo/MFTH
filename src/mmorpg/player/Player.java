@@ -14,7 +14,7 @@ import org.newdawn.slick.geom.Vector2f;
  *
  * @author Diego
  */
-public class Player extends Movable implements Placeable{
+public class Player extends Movable implements Placeable {
 
     private Room room;
 
@@ -39,33 +39,17 @@ public class Player extends Movable implements Placeable{
     private void move(GameContainer container, int delta) {
         Input input = container.getInput();
         float moveFactor = speed * (delta / 100f);
-        if (input.isKeyDown(Input.KEY_LEFT) && room.canMoveTo(this, Room.DIRECTION_WEST)) {
-            if (position.x < 65) {
-                room.moveX(moveFactor);
-            } else {
-                position.x -= moveFactor;
-            }
+        if (input.isKeyDown(Input.KEY_LEFT) && room.canMoveTo(this, Room.DIRECTION_WEST) && room.movingInsideCamera(this, moveFactor, Room.DIRECTION_WEST)) {
+            position.x -= moveFactor;
         }
-        if (input.isKeyDown(Input.KEY_RIGHT) && room.canMoveTo(this, Room.DIRECTION_EAST)) {
-            if (position.x > 715) {
-                room.moveX(moveFactor * (-1));
-            } else {
-                position.x += moveFactor;
-            }
+        if (input.isKeyDown(Input.KEY_RIGHT) && room.canMoveTo(this, Room.DIRECTION_EAST) && room.movingInsideCamera(this, moveFactor, Room.DIRECTION_EAST)) {
+            position.x += moveFactor;
         }
-        if (input.isKeyDown(Input.KEY_UP) && room.canMoveTo(this, Room.DIRECTION_NORTH)) {
-            if (position.y < 65) {
-                room.moveY(moveFactor);
-            } else {
-                position.y -= moveFactor;
-            }
+        if (input.isKeyDown(Input.KEY_UP) && room.canMoveTo(this, Room.DIRECTION_NORTH) && room.movingInsideCamera(this, moveFactor, Room.DIRECTION_NORTH)) {
+            position.y -= moveFactor;
         }
-        if (input.isKeyDown(Input.KEY_DOWN) && room.canMoveTo(this, Room.DIRECTION_SOUTH)) {
-            if (position.y > 515) {
-                room.moveY(moveFactor * (-1));
-            } else {
-                position.y += moveFactor;
-            }
+        if (input.isKeyDown(Input.KEY_DOWN) && room.canMoveTo(this, Room.DIRECTION_SOUTH) && room.movingInsideCamera(this, moveFactor, Room.DIRECTION_SOUTH)) {
+            position.y += moveFactor;
         }
     }
 
