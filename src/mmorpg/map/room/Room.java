@@ -69,10 +69,10 @@ public class Room {
     public DoorTile putDoor(int tileX, int tileY) {
         //only on borders...
         if ((tileX == 0 || tileX == room[0].length - 1) || (tileY == 0 || tileY == room.length - 1)) {
-            room[tileY][tileX] = new DoorTile(null, null, new Vector2f(tileX * tileWidth, tileY * tileHeight), tileWidth, tileHeight);
+            room[tileY][tileX] = new DoorTile(tileX, tileY, tileWidth, tileHeight);
             room[tileY][tileX].setTileX(tileX);
             room[tileY][tileX].setTileY(tileY);
-            return (DoorTile)room[tileY][tileX];
+            return (DoorTile) room[tileY][tileX];
         }
         return null;
     }
@@ -240,8 +240,7 @@ public class Room {
 
     public boolean hitTheDoor(Placeable placeable) {
         if (getCurrentTile(placeable).getType() == Tile.DOOR_TILE) {
-            map.nextRoom(this, getCurrentTile(placeable), placeable);
-            //map.placeObject(placeable, nextRoom.getRoomId(), roomId, roomId);
+            map.nextRoom(this, (DoorTile) getCurrentTile(placeable), placeable);
             return true;
         }
         return false;

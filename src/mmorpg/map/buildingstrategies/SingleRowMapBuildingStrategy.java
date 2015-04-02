@@ -3,6 +3,7 @@ package mmorpg.map.buildingstrategies;
 import java.util.ArrayList;
 import mmorpg.map.Map;
 import mmorpg.map.room.Room;
+import mmorpg.map.room.buildingstrategies.BorderRoomBuildingStrategy;
 import mmorpg.map.room.buildingstrategies.RandomRoomBuildingStrategy;
 import mmorpg.map.room.buildingstrategies.RoomBuildingStrategy;
 import mmorpg.map.tiles.DoorTile;
@@ -28,32 +29,22 @@ public class SingleRowMapBuildingStrategy extends MapBuildingStrategy {
         this.rooms = new ArrayList<>();
         int widthRoom = 16;
         int heightRoom = 12;
+        //create the rooms
         if (this.orientation == ORIENTATION_HORIZONTAL) {
             for (int i = 0; i < roomsCount; i++) {
                 RoomBuildingStrategy roomBuildingStrategy = new RandomRoomBuildingStrategy(widthRoom, heightRoom, tileWidth, tileHeight);
                 Room newRoom = new Room(i, roomBuildingStrategy);
                 newRoom.setMap(map);
-                /*
-                 if (i >= 0 && i != rooms.length - 1) {
-                 newRoom.putDoor(rooms[i], rooms[i + 1], newRoom.getRoomWidth() - 1, 6);
-                 }
-                 if (i <= rooms.length - 1 && i != 0) {
-                 newRoom.putDoor(rooms[i], rooms[i - 1], 0, 6);
-                 }*/
                 rooms.add(newRoom);
             }
-        } /*else if (this.orientation == ORIENTATION_VERTICAL) {
-         for (int i = 0; i < roomsCount; i++) {
-         RoomBuildingStrategy roomBuildingStrategy = new BorderRoomBuildingStrategy(widthRoom, heightRoom, tileWidth, tileHeight);
-         Room newRoom = new Room(i, roomBuildingStrategy);
-         //                 if (i >= 0 && i != rooms.length - 1) {
-         //                 newRoom.putDoor(rooms[i], rooms[i + 1], 8, newRoom.getRoomHeight() - 1);
-         //                 }
-         //                 if (i <= rooms.length - 1 && i != 0) {
-         //                 newRoom.putDoor(rooms[i], rooms[i - 1], 8, 0);
-         //                 }
-         rooms.add(newRoom);
-         }}*/
+        } else if (this.orientation == ORIENTATION_VERTICAL) {
+            for (int i = 0; i < roomsCount; i++) {
+                RoomBuildingStrategy roomBuildingStrategy = new BorderRoomBuildingStrategy(widthRoom, heightRoom, tileWidth, tileHeight);
+                Room newRoom = new Room(i, roomBuildingStrategy);
+                newRoom.setMap(map);
+                rooms.add(newRoom);
+            }
+        }
 
         //now create the passages
         this.passages = new ArrayList<>();
@@ -61,18 +52,22 @@ public class SingleRowMapBuildingStrategy extends MapBuildingStrategy {
             Room currentRoom = rooms.get(i);
             if (i < rooms.size() - 1) {
                 Room nextRoom = rooms.get(i + 1);
-                connectRooms(currentRoom, nextRoom);
+                if (this.orientation == ORIENTATION_HORIZONTAL) {
+                    connectRooms(currentRoom, currentRoom.getRoomWidth() - 1, 2, nextRoom, 0, 2);
+                } else if (this.orientation == ORIENTATION_VERTICAL) {
+                    connectRooms(currentRoom, 4, currentRoom.getRoomHeight() - 1, nextRoom, 4, 0);
+                }
             }
         }
     }
-    
-    private void connectRooms(Room room1, Room room2){
-        DoorTile doorRoom1 = room1.putDoor(room1.getRoomWidth()-1, 2);
-        DoorTile doorRoom2 = room2.putDoor(0, 2);
+
+    private void connectRooms(Room room1, int tileX1, int tileY1, Room room2, int tileX2, int tileY2) {
+        DoorTile doorRoom1 = room1.putDoor(tileX1, tileY1);
+        DoorTile doorRoom2 = room2.putDoor(tileX2, tileY2);
         doorRoom1.setMyRoom(room1);
         doorRoom1.setConnectedTo(doorRoom2);
         doorRoom2.setMyRoom(room2);
         doorRoom2.setConnectedTo(doorRoom1);
     }
-    
+
 }

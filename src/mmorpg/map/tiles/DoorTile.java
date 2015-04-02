@@ -13,12 +13,12 @@ public class DoorTile extends Tile {
     private Room myRoom;
     private DoorTile connectedTo;
 
-    public DoorTile(Room myRoom, DoorTile connectedTo, int tileX, int tileY, float width, float height, Color color, boolean walkable) {
-        super(tileX, tileY, width, height, color, walkable);
+    public DoorTile(Room myRoom, DoorTile connectedTo, int tileX, int tileY, float width, float height) {
+        super(tileX, tileY, width, height, Color.lightGray, true);
     }
 
-    public DoorTile(int tileX, int tileY, float width, float height, Color color, boolean walkable) {
-        this(null, null, tileX, tileY, width, height, color, walkable);
+    public DoorTile(int tileX, int tileY, float width, float height) {
+        this(null, null, tileX, tileY, width, height);
         this.myRoom = null;
         this.connectedTo = null;
     }

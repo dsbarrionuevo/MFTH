@@ -24,11 +24,7 @@ import org.newdawn.slick.geom.Vector2f;
 public class MMORPG extends BasicGame {
 
     private Map map;
-    private Treasure treasure;
     private Player player;
-    private ArrayList<Enemy> enemies;
-    //
-    private TimedMessage message;
 
     public MMORPG() throws SlickException {
         super("MMORPG");
@@ -45,59 +41,17 @@ public class MMORPG extends BasicGame {
         map = new Map(3);
         player = new Player();
         map.placeObject(player, 6, 6);
-        /*
-         treasure = new Treasure();
-         map.placeObject(treasure, 14, 10);*/
-        enemies = new ArrayList<>();
-        for (int i = 0; i < 0; i++) {
-            Enemy newEnemy = new SmartWallEnemy();
-            ((SmartWallEnemy) newEnemy).setRoom(map.getCurrentRoom());
-            map.placeObject(newEnemy,
-                    ((int) (Math.random() * 14) + 1),
-                    ((int) (Math.random() * 10) + 1));
-            enemies.add(newEnemy);
-        }
-        //
-        message = new TimedMessage(new Vector2f(10f, 10f), "Welcome");
     }
 
     @Override
     public void update(GameContainer container, int delta) throws SlickException {
         player.update(container, delta);
-        for (Enemy enemy : enemies) {
-            enemy.update(container, delta);
-            if (player.collide(enemy)) {
-                message.changeMessage("Player got killed by enemy...");
-            }
-
-            //            for (Enemy otherEnemy : enemies) {
-            //                if (enemy != otherEnemy) {
-            //                    if (enemy.collide(otherEnemy)) {
-            //                        ((WallEnemy)enemy).changeToOppositeDirection();
-            //                        ((WallEnemy)otherEnemy).changeToOppositeDirection();
-            //                    }
-            //                }
-            //            }
-        }
-        /*
-         //
-         if (player.collide(treasure)) {
-         message.changeMessage("Player took the treasure!");
-         }*/
-        //
-        message.update(delta);
-
     }
 
     @Override
     public void render(GameContainer container, Graphics g) throws SlickException {
         map.render(container, g);
         player.render(container, g);
-        /*treasure.render(container, g);*/
-        for (Enemy enemy : enemies) {
-            enemy.render(container, g);
-        }
-        message.render(container, g);
     }
 
     public static void main(String[] args) {

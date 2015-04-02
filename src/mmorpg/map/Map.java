@@ -3,11 +3,9 @@ package mmorpg.map;
 import java.util.ArrayList;
 import mmorpg.common.Placeable;
 import mmorpg.map.buildingstrategies.MapBuildingStrategy;
-import mmorpg.map.buildingstrategies.MapBuildingStrategy.Passage;
 import mmorpg.map.buildingstrategies.SingleRowMapBuildingStrategy;
 import mmorpg.map.room.Room;
 import mmorpg.map.tiles.DoorTile;
-import mmorpg.map.tiles.Tile;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.SlickException;
@@ -23,7 +21,7 @@ public class Map {
     private MapBuildingStrategy buildingStrategy;
 
     public Map(int roomsCount) {
-        this.buildingStrategy = new SingleRowMapBuildingStrategy(SingleRowMapBuildingStrategy.ORIENTATION_HORIZONTAL, roomsCount, 50, 50);
+        this.buildingStrategy = new SingleRowMapBuildingStrategy(SingleRowMapBuildingStrategy.ORIENTATION_VERTICAL, roomsCount, 50, 50);
         this.buildingStrategy.build(this);
         this.rooms = this.buildingStrategy.getRooms();
         this.currentRoom = 0;
@@ -53,14 +51,11 @@ public class Map {
         return this.getRoom(this.currentRoom);
     }
 
-    public Room nextRoom(Room currentRoom, Tile doorTile, Placeable placeable) {
-        //Room currentRoom = placeable.getRoom();//this or through parameters
-        //Passage found = buildingStrategy.findPassageByRoom(currentRoom);
-        DoorTile otherDoor = ((DoorTile) doorTile).getConnectedTo();
+    public void nextRoom(Room currentRoom, DoorTile doorTile, Placeable placeable) {
+        DoorTile otherDoor = doorTile.getConnectedTo();
         Room nextRoom = otherDoor.getMyRoom();
         placeObject(placeable, nextRoom.getRoomId(), otherDoor.getTileX(), otherDoor.getTileY());
         changeRoom(nextRoom.getRoomId());
-        return null;
     }
 
     public void changeRoom(int idNewRoom) {
