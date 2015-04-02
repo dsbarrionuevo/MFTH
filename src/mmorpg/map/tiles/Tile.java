@@ -22,8 +22,19 @@ public abstract class Tile extends Drawable {
 
     protected int tileX, tileY;
 
+    public Tile(int tileX, int tileY, float width, float height, Color color, boolean walkable) {
+        super(new Vector2f(tileX * width, tileY * height), new Rectangle(0, 0, width, height));
+        this.tileX = tileX;
+        this.tileY = tileY;
+        this.color = color;
+        this.walkable = walkable;
+    }
+
+    @Deprecated
     public Tile(Vector2f position, float width, float height, Color color, boolean walkable) {
         super(position, new Rectangle(0, 0, width, height));
+        this.tileX = (int) (Math.floor(position.x / width));
+        this.tileY = (int) (Math.floor(position.y / height));
         this.color = color;
         this.walkable = walkable;
     }

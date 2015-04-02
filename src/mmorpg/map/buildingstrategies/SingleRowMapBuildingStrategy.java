@@ -3,10 +3,9 @@ package mmorpg.map.buildingstrategies;
 import java.util.ArrayList;
 import mmorpg.map.Map;
 import mmorpg.map.room.Room;
-import mmorpg.map.room.buildingstrategies.BorderRoomBuildingStrategy;
+import mmorpg.map.room.buildingstrategies.RandomRoomBuildingStrategy;
 import mmorpg.map.room.buildingstrategies.RoomBuildingStrategy;
 import mmorpg.map.tiles.DoorTile;
-import org.newdawn.slick.geom.Vector2f;
 
 /**
  *
@@ -31,7 +30,7 @@ public class SingleRowMapBuildingStrategy extends MapBuildingStrategy {
         int heightRoom = 12;
         if (this.orientation == ORIENTATION_HORIZONTAL) {
             for (int i = 0; i < roomsCount; i++) {
-                RoomBuildingStrategy roomBuildingStrategy = new BorderRoomBuildingStrategy(widthRoom, heightRoom, tileWidth, tileHeight);
+                RoomBuildingStrategy roomBuildingStrategy = new RandomRoomBuildingStrategy(widthRoom, heightRoom, tileWidth, tileHeight);
                 Room newRoom = new Room(i, roomBuildingStrategy);
                 newRoom.setMap(map);
                 /*
@@ -62,25 +61,8 @@ public class SingleRowMapBuildingStrategy extends MapBuildingStrategy {
             Room currentRoom = rooms.get(i);
             if (i < rooms.size() - 1) {
                 Room nextRoom = rooms.get(i + 1);
-                /*Passage passage = super.findPassageByRoom(currentRoom);
-                if (passage == null) {
-                    passage = new Passage(currentRoom, nextRoom);
-                } else {
-                    passage.addConnection(nextRoom);
-                }
-                passages.add(passage);
-                DoorTile otherDoor = new DoorTile(nextRoom, null, new Vector2f(tileWidth * 0, tileHeight * 6), tileWidth, tileHeight);
-                currentRoom.putDoor(currentRoom, nextRoom, currentRoom.getRoomWidth() - 1, 6);
-                //passages.add(new Passage(nextRoom,currentRoom));
-                */
                 connectRooms(currentRoom, nextRoom);
             }
-            /*
-             if (i > 0) {
-             Room prevRoom = rooms.get(i - 1);
-             passages.add(new Passage(currentRoom, prevRoom));
-             //passages.add(new Passage(prevRoom, currentRoom));
-             }*/
         }
     }
     

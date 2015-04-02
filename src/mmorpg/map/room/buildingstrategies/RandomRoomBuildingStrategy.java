@@ -2,7 +2,6 @@ package mmorpg.map.room.buildingstrategies;
 
 import mmorpg.map.tiles.Tile;
 import mmorpg.map.tiles.WallTile;
-import org.newdawn.slick.geom.Vector2f;
 
 /**
  *
@@ -18,8 +17,8 @@ public class RandomRoomBuildingStrategy extends RoomBuildingStrategy {
     public Tile[][] build() {
         Tile[][] map = new Tile[heightLength][widthLength];
         borderMap(map);
-        int j = heightLength - 1, i = (int) (Math.random() * (widthLength - 2)) + 1;
-        map[j][i] = new WallTile(new Vector2f(j * tileWidth, i * tileHeight), tileWidth, tileHeight);
+        int y = heightLength - 2, x = (int) (Math.random() * (widthLength - 2)) + 1;
+        map[y][x] = new WallTile(x, y, tileWidth, tileHeight);
         return map;
 
     }

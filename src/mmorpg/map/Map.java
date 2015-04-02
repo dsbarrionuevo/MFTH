@@ -19,7 +19,6 @@ import org.newdawn.slick.SlickException;
 public class Map {
 
     private ArrayList<Room> rooms;
-    private ArrayList<Passage> passages;
     private int currentRoom;
     private MapBuildingStrategy buildingStrategy;
 
@@ -27,7 +26,6 @@ public class Map {
         this.buildingStrategy = new SingleRowMapBuildingStrategy(SingleRowMapBuildingStrategy.ORIENTATION_HORIZONTAL, roomsCount, 50, 50);
         this.buildingStrategy.build(this);
         this.rooms = this.buildingStrategy.getRooms();
-        this.passages = this.buildingStrategy.getPassages();
         this.currentRoom = 0;
     }
 

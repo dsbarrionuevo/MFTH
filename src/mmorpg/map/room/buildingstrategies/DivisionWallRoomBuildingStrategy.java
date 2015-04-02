@@ -40,9 +40,9 @@ public class DivisionWallRoomBuildingStrategy extends RoomBuildingStrategy {
                 tilePosition.x = wallIndex * tileWidth;
                 tilePosition.y = i * tileHeight;
                 if (i != randomDoorPosition) {
-                    map[i][wallIndex] = new WallTile(tilePosition, tileWidth, tileHeight);
+                    map[i][wallIndex] = new WallTile(wallIndex, i, tileWidth, tileHeight);
                 } else {
-                    map[i][wallIndex] = new BlankTile(tilePosition, tileWidth, tileHeight);
+                    map[i][wallIndex] = new BlankTile(wallIndex, i, tileWidth, tileHeight);
                 }
             }
             buildChamber(map, wallIndex, chamberHeight, ORIENTATION_HORIZONTAL, countDivisions);
@@ -55,9 +55,9 @@ public class DivisionWallRoomBuildingStrategy extends RoomBuildingStrategy {
                 tilePosition.x = i * tileWidth;
                 tilePosition.y = wallIndex * tileHeight;
                 if (i != randomDoorPosition) {
-                    map[wallIndex][i] = new WallTile(tilePosition, tileWidth, tileHeight);
+                    map[wallIndex][i] = new WallTile(i, wallIndex, tileWidth, tileHeight);
                 } else {
-                    map[wallIndex][i] = new BlankTile(tilePosition, tileWidth, tileHeight);
+                    map[wallIndex][i] = new BlankTile(i, wallIndex, tileWidth, tileHeight);
                 }
             }
             buildChamber(map, chamberWidth, wallIndex, ORIENTATION_VERTICAL, countDivisions);

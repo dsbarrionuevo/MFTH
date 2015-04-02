@@ -1,7 +1,6 @@
 package mmorpg.map.tiles;
 
 import org.newdawn.slick.Color;
-import org.newdawn.slick.geom.Vector2f;
 
 /**
  *
@@ -9,8 +8,8 @@ import org.newdawn.slick.geom.Vector2f;
  */
 public class WallTile extends Tile {
 
-    public WallTile(Vector2f position, float width, float height) {
-        super(position, width, height, Color.gray, false);
+    public WallTile(int tileX, int tileY, float width, float height) {
+        super(tileX, tileY, width, height, Color.gray, false);
     }
 
     @Override
