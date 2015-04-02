@@ -7,6 +7,7 @@ import mmorpg.map.Map;
 import mmorpg.map.room.buildingstrategies.RoomBuildingStrategy;
 import mmorpg.map.tiles.DoorTile;
 import mmorpg.map.tiles.Tile;
+import mmorpg.player.Player;
 import org.lwjgl.opengl.Display;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
@@ -64,6 +65,12 @@ public class Room {
         return null;
     }
 
+    public void update(GameContainer container, int delta) throws SlickException {
+        for (Placeable object : objects) {
+            object.update(container, delta);
+        }
+    }
+
     public void render(GameContainer container, Graphics g) throws SlickException {
         //when using camera logic, this should be optimized
         for (int i = 0; i < room.length; i++) {
@@ -71,18 +78,36 @@ public class Room {
                 room[i][j].render(container, g);
             }
         }
+        for (Placeable object : objects) {
+            object.render(container, g);
+        }
     }
 
-    public void move(Vector2f moveFactor) {
+    public void move(Vector2f moveFactor, Placeable ignorePlaceable) {
         for (int i = 0; i < room.length; i++) {
             for (int j = 0; j < room[0].length; j++) {
                 room[i][j].getPosition().x += moveFactor.x;
                 room[i][j].getPosition().y += moveFactor.y;
             }
         }
+        for (Placeable object : objects) {
+            if (ignorePlaceable == null) {
+                object.getPosition().x += moveFactor.x;
+                object.getPosition().y += moveFactor.y;
+            } else {
+                if (object != ignorePlaceable) {
+                    object.getPosition().x += moveFactor.x;
+                    object.getPosition().y += moveFactor.y;
+                }
+            }
+        }
     }
 
-    public Tile getByPositionInRoom(int tileX, int tileY) {
+    public void move(Vector2f moveFactor) {
+        this.move(moveFactor, null);
+    }
+
+    public Tile getTileByPositionInRoom(int tileX, int tileY) {
         return room[tileY][tileX];
     }
 
@@ -103,9 +128,10 @@ public class Room {
         //int tileY = (int) (Math.floor((placeable.getPosition().y + placeable.getHeight()/2 - tileHeight/2) / tileHeight));
         /*int tileX = (int) (Math.floor((placeable.getPosition().x) / tileWidth));
          int tileY = (int) (Math.floor((placeable.getPosition().y) / tileHeight));*/
+        Vector2f mainPosition = room[0][0].getPosition();
         Vector2f absolutePosition = new Vector2f(
-                Math.abs(this.offset.x - room[0][0].getPosition().x) + placeable.getPosition().x,
-                Math.abs(this.offset.y - room[0][0].getPosition().y) + placeable.getPosition().y
+                Math.abs(this.offset.x) + placeable.getPosition().x - mainPosition.x,
+                Math.abs(this.offset.y) + placeable.getPosition().y - mainPosition.y
         );
         int tileX = (int) (Math.floor((absolutePosition.x) / tileWidth));
         int tileY = (int) (Math.floor((absolutePosition.y) / tileHeight));
@@ -183,7 +209,7 @@ public class Room {
                 limit = definedLimitWidth;
                 if (position.x < limit) {
                     movement.x = distanceMoving;
-                    move(movement);
+                    move(movement, placeable);
                     allowMoving = false;
                 }
                 break;
@@ -191,7 +217,7 @@ public class Room {
                 limit = camera.getWidth() - definedLimitWidth;
                 if (position.x > limit) {
                     movement.x = distanceMoving * (-1);
-                    move(movement);
+                    move(movement, placeable);
                     allowMoving = false;
                 }
                 break;
@@ -199,7 +225,7 @@ public class Room {
                 limit = definedLimitHeight;
                 if (position.y < limit) {
                     movement.y = distanceMoving;
-                    move(movement);
+                    move(movement, placeable);
                     allowMoving = false;
                 }
                 break;
@@ -207,7 +233,7 @@ public class Room {
                 limit = camera.getHeight() - definedLimitHeight;
                 if (position.y > limit) {
                     movement.y = distanceMoving * (-1);
-                    move(movement);
+                    move(movement, placeable);
                     allowMoving = false;
                 }
                 break;
@@ -220,8 +246,8 @@ public class Room {
         Vector2f mainPosition = room[0][0].getPosition();
         Vector2f center = new Vector2f(camera.getWidth() / 2, camera.getHeight() / 2);
         Vector2f finalPosition = new Vector2f(
-                Math.abs(center.x - position.getX() - Math.abs(tileWidth / 2)),
-                Math.abs(center.y - position.getY() - Math.abs(tileHeight / 2))
+                center.x - position.getX() - Math.abs(tileWidth / 2),
+                center.y - position.getY() - Math.abs(tileHeight / 2)
         );
         move(finalPosition);
     }
@@ -247,6 +273,12 @@ public class Room {
         }
         result = (Tile[]) foundTiles.toArray();
         return result;
+    }
+
+    public void addObject(Placeable placeable, int tileX, int tileY) {
+        placeable.setRoom(this);
+        this.placeObject(placeable, tileX, tileY);
+        this.objects.add(placeable);
     }
 
     public void addPassage(Room connectedTo) {

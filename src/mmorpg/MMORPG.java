@@ -41,20 +41,19 @@ public class MMORPG extends BasicGame {
         Camera.getInstance().setPadding(1);
         map = new Map(1);
         player = new Player();
-        map.placeObject(player, 1, 1);
+        map.getCurrentRoom().addObject(player, 10, 10);
         map.getCurrentRoom().focusObject(player);
     }
 
     @Override
     public void update(GameContainer container, int delta) throws SlickException {
-        player.update(container, delta);
+        map.getCurrentRoom().update(container, delta);
     }
 
     @Override
     public void render(GameContainer container, Graphics g) throws SlickException {
         map.render(container, g);
-        player.render(container, g);
-        g.fill(new Circle(400,300, 2));
+        //g.fill(new Circle(400,300, 2));
     }
 
     public static void main(String[] args) {

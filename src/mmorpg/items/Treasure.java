@@ -62,4 +62,9 @@ public class Treasure extends Drawable implements Placeable {
         return this.room;
     }
 
+    @Override
+    public void update(GameContainer container, int delta) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
 }
