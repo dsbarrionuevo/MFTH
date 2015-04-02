@@ -36,7 +36,7 @@ public class MMORPG extends BasicGame {
         map = new Map(5);
         player = new Player();
         map.getCurrentRoom().addObject(player, 1, 1);
-        map.getCurrentRoom().focusObject(player);
+        //map.getCurrentRoom().focusObject(player);
     }
 
     @Override

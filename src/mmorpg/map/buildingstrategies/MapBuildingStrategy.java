@@ -3,6 +3,7 @@ package mmorpg.map.buildingstrategies;
 import java.util.ArrayList;
 import mmorpg.map.Map;
 import mmorpg.map.room.Room;
+import mmorpg.map.tiles.DoorTile;
 
 /**
  *
@@ -13,14 +14,12 @@ public abstract class MapBuildingStrategy {
     protected int roomsCount;
     protected float tileWidth, tileHeight;
     protected ArrayList<Room> rooms;
-    protected ArrayList<Passage> passages;
 
     public MapBuildingStrategy(int roomsCount, float tileWidth, float tileHeight) {
         this.tileWidth = tileWidth;
         this.tileHeight = tileHeight;
         this.roomsCount = roomsCount;
         this.rooms = new ArrayList<>();
-        this.passages = new ArrayList<>();
     }
 
     public abstract void build(Map map);
@@ -29,61 +28,71 @@ public abstract class MapBuildingStrategy {
         return rooms;
     }
 
-    public ArrayList<Passage> getPassages() {
-        return passages;
+    protected void connectRooms(Room room1, int tileX1, int tileY1, Room room2, int tileX2, int tileY2) {
+        DoorTile doorRoom1 = room1.putDoor(tileX1, tileY1);
+        DoorTile doorRoom2 = room2.putDoor(tileX2, tileY2);
+        doorRoom1.setMyRoom(room1);
+        doorRoom1.setConnectedTo(doorRoom2);
+        doorRoom2.setMyRoom(room2);
+        doorRoom2.setConnectedTo(doorRoom1);
     }
+    /*
 
-    public final  Passage findPassageByRoom(Room target) {
-        Passage found = null;
-        for (Passage passage : passages) {
-            if (passage.getRoom().equals(target)) {
-                found = passage;
-            }
-        }
-        return found;
-    }
+     public ArrayList<Passage> getPassages() {
+     return passages;
+     }
 
-    protected final Passage findPassageByIdRoom(int target) {
-        Passage found = null;
-        for (Passage passage : passages) {
-            if (passage.getRoom().getRoomId() == target) {
-                found = passage;
-            }
-        }
-        return found;
-    }
+     public final  Passage findPassageByRoom(Room target) {
+     Passage found = null;
+     for (Passage passage : passages) {
+     if (passage.getRoom().equals(target)) {
+     found = passage;
+     }
+     }
+     return found;
+     }
 
-    public class Passage {
+     protected final Passage findPassageByIdRoom(int target) {
+     Passage found = null;
+     for (Passage passage : passages) {
+     if (passage.getRoom().getRoomId() == target) {
+     found = passage;
+     }
+     }
+     return found;
+     }
 
-        private Room room;
-        private ArrayList<Room> connections;
+     public class Passage {
 
-        public Passage(Room room, ArrayList<Room> passages) {
-            this.room = room;
-            this.connections = passages;
-        }
+     private Room room;
+     private ArrayList<Room> connections;
 
-        public Passage(Room room, Room connection) {
-            this(room);
-            this.addConnection(connection);
-        }
+     public Passage(Room room, ArrayList<Room> passages) {
+     this.room = room;
+     this.connections = passages;
+     }
 
-        public Room getRoom() {
-            return room;
-        }
+     public Passage(Room room, Room connection) {
+     this(room);
+     this.addConnection(connection);
+     }
 
-        public ArrayList<Room> getConnections() {
-            return connections;
-        }
+     public Room getRoom() {
+     return room;
+     }
 
-        public Passage(Room room) {
-            this(room, new ArrayList<Room>());
-        }
+     public ArrayList<Room> getConnections() {
+     return connections;
+     }
 
-        public void addConnection(Room connection) {
-            this.connections.add(connection);
-        }
+     public Passage(Room room) {
+     this(room, new ArrayList<Room>());
+     }
 
-    }
+     public void addConnection(Room connection) {
+     this.connections.add(connection);
+     }
+
+     }*/
 
 }

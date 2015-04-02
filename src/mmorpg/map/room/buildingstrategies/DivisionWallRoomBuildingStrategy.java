@@ -21,8 +21,7 @@ public class DivisionWallRoomBuildingStrategy extends RoomBuildingStrategy {
     @Override
     public Tile[][] build() {
         Tile[][] map = new Tile[heightLength][widthLength];
-        //blank map
-        blankMap(map);
+        borderMap(map);
         buildChamber(map, widthLength, heightLength, ORIENTATION_HORIZONTAL, 0);
         return map;
     }
@@ -36,9 +35,6 @@ public class DivisionWallRoomBuildingStrategy extends RoomBuildingStrategy {
             int wallIndex = chamberWidth / 2;
             int randomDoorPosition = (int) (Math.random() * (chamberWidth / 2));
             for (int i = 0; i < map.length; i++) {
-                Vector2f tilePosition = new Vector2f();
-                tilePosition.x = wallIndex * tileWidth;
-                tilePosition.y = i * tileHeight;
                 if (i != randomDoorPosition) {
                     map[i][wallIndex] = new WallTile(wallIndex, i, tileWidth, tileHeight);
                 } else {
@@ -51,9 +47,6 @@ public class DivisionWallRoomBuildingStrategy extends RoomBuildingStrategy {
             int wallIndex = chamberHeight / 2;
             int randomDoorPosition = (int) (Math.random() * (chamberHeight / 2));
             for (int i = 0; i < map[0].length; i++) {
-                Vector2f tilePosition = new Vector2f();
-                tilePosition.x = i * tileWidth;
-                tilePosition.y = wallIndex * tileHeight;
                 if (i != randomDoorPosition) {
                     map[wallIndex][i] = new WallTile(i, wallIndex, tileWidth, tileHeight);
                 } else {

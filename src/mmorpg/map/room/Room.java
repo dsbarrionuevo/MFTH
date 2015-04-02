@@ -1,14 +1,14 @@
 package mmorpg.map.room;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import mmorpg.camera.Camera;
 import mmorpg.common.Placeable;
+import mmorpg.enemies.WallEnemy;
 import mmorpg.map.Map;
 import mmorpg.map.room.buildingstrategies.RoomBuildingStrategy;
 import mmorpg.map.tiles.DoorTile;
 import mmorpg.map.tiles.Tile;
-import mmorpg.player.Player;
-import org.lwjgl.opengl.Display;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.SlickException;
@@ -37,6 +37,7 @@ public class Room {
     //
     //Displayable objects
     ArrayList<Placeable> objects;
+    HashMap<Placeable, Vector2f> initPositions;
 
     public Room(int roomId, RoomBuildingStrategy buildingStrategy) {
         this.roomId = roomId;
@@ -46,14 +47,23 @@ public class Room {
         this.passages = new ArrayList<>();
         this.camera = Camera.getInstance();
         this.offset = new Vector2f();
-        this.build();
         this.objects = new ArrayList<>();
+        this.initPositions = new HashMap<>();
+        this.build();
     }
 
     public final void build() {
         this.room = this.buildingStrategy.build();
         this.roomWidth = room[0].length;
         this.roomHeight = room.length;
+        //add enemies
+        if (this.roomId == 1) {
+            for (int i = 0; i < 1; i++) {
+                WallEnemy enemy = new WallEnemy();
+                addObject(enemy, 2, 2);
+                initPositions.put(enemy, new Vector2f(2, 2));
+            }
+        }
     }
 
     public DoorTile putDoor(int tileX, int tileY) {
@@ -118,7 +128,9 @@ public class Room {
             }
         }
         for (Placeable object : objects) {
-            object.setPosition(newPosition);
+            //move objects to their init position
+            //object.setPosition(new Vector2f(object.getPosition().x + newPosition.x, object.getPosition().y+ newPosition.y));
+            placeObject(object, (int) initPositions.get(object).x, (int) initPositions.get(object).y);
         }
     }
 

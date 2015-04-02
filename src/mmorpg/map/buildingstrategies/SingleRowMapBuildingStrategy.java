@@ -4,9 +4,8 @@ import java.util.ArrayList;
 import mmorpg.map.Map;
 import mmorpg.map.room.Room;
 import mmorpg.map.room.buildingstrategies.BorderRoomBuildingStrategy;
-import mmorpg.map.room.buildingstrategies.RandomRoomBuildingStrategy;
+import mmorpg.map.room.buildingstrategies.DivisionWallRoomBuildingStrategy;
 import mmorpg.map.room.buildingstrategies.RoomBuildingStrategy;
-import mmorpg.map.tiles.DoorTile;
 
 /**
  *
@@ -32,6 +31,8 @@ public class SingleRowMapBuildingStrategy extends MapBuildingStrategy {
         //create the rooms
         if (this.orientation == ORIENTATION_HORIZONTAL) {
             for (int i = 0; i < roomsCount; i++) {
+                widthRoom = (int)(Math.random() * 14) + 4;
+                heightRoom = (int)(Math.random() * 8) + 4;
                 RoomBuildingStrategy roomBuildingStrategy = new BorderRoomBuildingStrategy(widthRoom, heightRoom, tileWidth, tileHeight);
                 Room newRoom = new Room(i, roomBuildingStrategy);
                 newRoom.setMap(map);
@@ -39,6 +40,8 @@ public class SingleRowMapBuildingStrategy extends MapBuildingStrategy {
             }
         } else if (this.orientation == ORIENTATION_VERTICAL) {
             for (int i = 0; i < roomsCount; i++) {
+                widthRoom = (int)(Math.random() * 14) + 4;
+                heightRoom = (int)(Math.random() * 8) + 4;
                 RoomBuildingStrategy roomBuildingStrategy = new BorderRoomBuildingStrategy(widthRoom, heightRoom, tileWidth, tileHeight);
                 Room newRoom = new Room(i, roomBuildingStrategy);
                 newRoom.setMap(map);
@@ -47,29 +50,21 @@ public class SingleRowMapBuildingStrategy extends MapBuildingStrategy {
         }
 
         //now create the passages
-        this.passages = new ArrayList<>();
         for (int i = 0; i < rooms.size(); i++) {
             Room currentRoom = rooms.get(i);
             if (i < rooms.size() - 1) {
                 Room nextRoom = rooms.get(i + 1);
                 if (this.orientation == ORIENTATION_HORIZONTAL) {
-                    int randomPosition = ((int) (Math.random() * (heightRoom - 2)) + 1);
-                    connectRooms(currentRoom, currentRoom.getRoomWidth() - 1, randomPosition, nextRoom, 0, randomPosition);
+                    int randomPositionCurrentRoom = ((int) (Math.random() * (currentRoom.getRoomHeight() - 2)) + 1);
+                    int randomPositionNextRoom = ((int) (Math.random() * (nextRoom.getRoomHeight() - 2)) + 1);
+                    connectRooms(currentRoom, currentRoom.getRoomWidth() - 1, randomPositionCurrentRoom, nextRoom, 0, randomPositionNextRoom);
                 } else if (this.orientation == ORIENTATION_VERTICAL) {
-                    int randomPosition = ((int) (Math.random() * (widthRoom - 2)) + 1);
-                    connectRooms(currentRoom, randomPosition, currentRoom.getRoomHeight() - 1, nextRoom, randomPosition, 0);
+                    int randomPositionCurrentRoom = ((int) (Math.random() * (currentRoom.getRoomWidth()- 2)) + 1);
+                    int randomPositionNextRoom = ((int) (Math.random() * (nextRoom.getRoomWidth()- 2)) + 1);
+                    connectRooms(currentRoom, randomPositionCurrentRoom, currentRoom.getRoomHeight() - 1, nextRoom, randomPositionNextRoom, 0);
                 }
             }
         }
-    }
-
-    private void connectRooms(Room room1, int tileX1, int tileY1, Room room2, int tileX2, int tileY2) {
-        DoorTile doorRoom1 = room1.putDoor(tileX1, tileY1);
-        DoorTile doorRoom2 = room2.putDoor(tileX2, tileY2);
-        doorRoom1.setMyRoom(room1);
-        doorRoom1.setConnectedTo(doorRoom2);
-        doorRoom2.setMyRoom(room2);
-        doorRoom2.setConnectedTo(doorRoom1);
     }
 
 }

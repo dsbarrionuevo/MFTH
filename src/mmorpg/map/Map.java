@@ -57,7 +57,7 @@ public class Map {
         //placeObject(placeable, nextRoom.getRoomId(), otherDoor.getTileX(), otherDoor.getTileY());
         currentRoom.removeObject(placeable);
         nextRoom.addObject(placeable, otherDoor.getTileX(), otherDoor.getTileY());
-        nextRoom.focusObject(placeable);
+        //nextRoom.focusObject(placeable);
         changeRoom(nextRoom.getRoomId());
     }
 
