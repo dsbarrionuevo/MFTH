@@ -27,12 +27,12 @@ public class SingleRowMapBuildingStrategy extends MapBuildingStrategy {
     @Override
     public void build(Map map) {
         this.rooms = new ArrayList<>();
-        int widthRoom = 16;
-        int heightRoom = 12;
+        int widthRoom = 20;
+        int heightRoom = 20;
         //create the rooms
         if (this.orientation == ORIENTATION_HORIZONTAL) {
             for (int i = 0; i < roomsCount; i++) {
-                RoomBuildingStrategy roomBuildingStrategy = new RandomRoomBuildingStrategy(widthRoom, heightRoom, tileWidth, tileHeight);
+                RoomBuildingStrategy roomBuildingStrategy = new BorderRoomBuildingStrategy(widthRoom, heightRoom, tileWidth, tileHeight);
                 Room newRoom = new Room(i, roomBuildingStrategy);
                 newRoom.setMap(map);
                 rooms.add(newRoom);
@@ -53,9 +53,11 @@ public class SingleRowMapBuildingStrategy extends MapBuildingStrategy {
             if (i < rooms.size() - 1) {
                 Room nextRoom = rooms.get(i + 1);
                 if (this.orientation == ORIENTATION_HORIZONTAL) {
-                    connectRooms(currentRoom, currentRoom.getRoomWidth() - 1, 2, nextRoom, 0, 2);
+                    int randomPosition = ((int) (Math.random() * (heightRoom - 2)) + 1);
+                    connectRooms(currentRoom, currentRoom.getRoomWidth() - 1, randomPosition, nextRoom, 0, randomPosition);
                 } else if (this.orientation == ORIENTATION_VERTICAL) {
-                    connectRooms(currentRoom, 4, currentRoom.getRoomHeight() - 1, nextRoom, 4, 0);
+                    int randomPosition = ((int) (Math.random() * (widthRoom - 2)) + 1);
+                    connectRooms(currentRoom, randomPosition, currentRoom.getRoomHeight() - 1, nextRoom, randomPosition, 0);
                 }
             }
         }

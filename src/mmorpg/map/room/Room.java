@@ -7,6 +7,7 @@ import mmorpg.map.Map;
 import mmorpg.map.room.buildingstrategies.RoomBuildingStrategy;
 import mmorpg.map.tiles.DoorTile;
 import mmorpg.map.tiles.Tile;
+import org.lwjgl.opengl.Display;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.SlickException;
@@ -32,6 +33,9 @@ public class Room {
     private Camera camera;
     private Vector2f offset;
     private Map map;
+    //
+    //Displayable objects
+    ArrayList<Placeable> objects;
 
     public Room(int roomId, RoomBuildingStrategy buildingStrategy) {
         this.roomId = roomId;
@@ -42,36 +46,19 @@ public class Room {
         this.camera = Camera.getInstance();
         this.offset = new Vector2f();
         this.build();
+        this.objects = new ArrayList<>();
     }
 
     public final void build() {
         this.room = this.buildingStrategy.build();
         this.roomWidth = room[0].length;
         this.roomHeight = room.length;
-        for (int i = 0; i < room.length; i++) {
-            for (int j = 0; j < room[0].length; j++) {
-                room[i][j].setTileX(j);
-                room[i][j].setTileY(i);
-            }
-        }
-    }
-
-    @Deprecated
-    public boolean putDoor(Room fromRoom, Room toRoom, int tileX, int tileY) {
-        //only on borders...
-        if ((tileX == 0 || tileX == room[0].length - 1) || (tileY == 0 || tileY == room.length - 1)) {
-            room[tileY][tileX] = new DoorTile(fromRoom, null, new Vector2f(tileX * tileWidth, tileY * tileHeight), tileWidth, tileHeight);
-            return true;
-        }
-        return false;
     }
 
     public DoorTile putDoor(int tileX, int tileY) {
         //only on borders...
         if ((tileX == 0 || tileX == room[0].length - 1) || (tileY == 0 || tileY == room.length - 1)) {
             room[tileY][tileX] = new DoorTile(tileX, tileY, tileWidth, tileHeight);
-            room[tileY][tileX].setTileX(tileX);
-            room[tileY][tileX].setTileY(tileY);
             return (DoorTile) room[tileY][tileX];
         }
         return null;
@@ -86,27 +73,11 @@ public class Room {
         }
     }
 
-    @Deprecated
-    public void move(Vector2f newPosition) {
+    public void move(Vector2f moveFactor) {
         for (int i = 0; i < room.length; i++) {
             for (int j = 0; j < room[0].length; j++) {
-                room[i][j].setPosition(newPosition);
-            }
-        }
-    }
-
-    public void moveX(float factor) {
-        for (int i = 0; i < room.length; i++) {
-            for (int j = 0; j < room[0].length; j++) {
-                room[i][j].getPosition().x += factor;
-            }
-        }
-    }
-
-    public void moveY(float factor) {
-        for (int i = 0; i < room.length; i++) {
-            for (int j = 0; j < room[0].length; j++) {
-                room[i][j].getPosition().y += factor;
+                room[i][j].getPosition().x += moveFactor.x;
+                room[i][j].getPosition().y += moveFactor.y;
             }
         }
     }
@@ -139,7 +110,7 @@ public class Room {
         int tileX = (int) (Math.floor((absolutePosition.x) / tileWidth));
         int tileY = (int) (Math.floor((absolutePosition.y) / tileHeight));
         foundTile = room[tileY][tileX];
-//        System.out.println("Current tileX: " + tileX + ", tileY: " + tileY);
+        System.out.println("Current tileX: " + tileX + ", tileY: " + tileY);
         return foundTile;
     }
 
@@ -204,38 +175,55 @@ public class Room {
         float limit = 0f;
         float definedLimitWidth = tileWidth * camera.getPadding() + tileWidth / 2 - placeable.getWidth() / 2;
         float definedLimitHeight = tileHeight * camera.getPadding() + tileHeight / 2 - placeable.getHeight() / 2;
-        direction = -1;
+        Vector2f movement = new Vector2f();
+        movement.x = 0;
+        movement.y = 0;
         switch (direction) {
             case (DIRECTION_WEST):
                 limit = definedLimitWidth;
                 if (position.x < limit) {
-                    moveX(distanceMoving);
+                    movement.x = distanceMoving;
+                    move(movement);
                     allowMoving = false;
                 }
                 break;
             case (DIRECTION_EAST):
                 limit = camera.getWidth() - definedLimitWidth;
                 if (position.x > limit) {
-                    moveX(distanceMoving * (-1));
+                    movement.x = distanceMoving * (-1);
+                    move(movement);
                     allowMoving = false;
                 }
                 break;
             case (DIRECTION_NORTH):
                 limit = definedLimitHeight;
                 if (position.y < limit) {
-                    moveY(distanceMoving);
+                    movement.y = distanceMoving;
+                    move(movement);
                     allowMoving = false;
                 }
                 break;
             case (DIRECTION_SOUTH):
                 limit = camera.getHeight() - definedLimitHeight;
                 if (position.y > limit) {
-                    moveY(distanceMoving * (-1));
+                    movement.y = distanceMoving * (-1);
+                    move(movement);
                     allowMoving = false;
                 }
                 break;
         }
-        return true;
+        return allowMoving;
+    }
+
+    public void focusObject(Placeable placeable) {
+        Vector2f position = this.getCurrentTile(placeable).getPosition();
+        Vector2f mainPosition = room[0][0].getPosition();
+        Vector2f center = new Vector2f(camera.getWidth() / 2, camera.getHeight() / 2);
+        Vector2f finalPosition = new Vector2f(
+                Math.abs(center.x - position.getX() - Math.abs(tileWidth / 2)),
+                Math.abs(center.y - position.getY() - Math.abs(tileHeight / 2))
+        );
+        move(finalPosition);
     }
 
     public boolean hitTheDoor(Placeable placeable) {

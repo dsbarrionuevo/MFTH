@@ -21,7 +21,7 @@ public class Map {
     private MapBuildingStrategy buildingStrategy;
 
     public Map(int roomsCount) {
-        this.buildingStrategy = new SingleRowMapBuildingStrategy(SingleRowMapBuildingStrategy.ORIENTATION_VERTICAL, roomsCount, 50, 50);
+        this.buildingStrategy = new SingleRowMapBuildingStrategy(SingleRowMapBuildingStrategy.ORIENTATION_HORIZONTAL, roomsCount, 50, 50);
         this.buildingStrategy.build(this);
         this.rooms = this.buildingStrategy.getRooms();
         this.currentRoom = 0;

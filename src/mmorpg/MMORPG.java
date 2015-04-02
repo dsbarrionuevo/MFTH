@@ -15,6 +15,7 @@ import org.newdawn.slick.BasicGame;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.SlickException;
+import org.newdawn.slick.geom.Circle;
 import org.newdawn.slick.geom.Vector2f;
 
 /**
@@ -38,9 +39,10 @@ public class MMORPG extends BasicGame {
     public void init(GameContainer container) throws SlickException {
         Camera.createCamera(new Vector2f(0f, 0f), container.getWidth(), container.getHeight());
         Camera.getInstance().setPadding(1);
-        map = new Map(3);
+        map = new Map(1);
         player = new Player();
-        map.placeObject(player, 6, 6);
+        map.placeObject(player, 1, 1);
+        map.getCurrentRoom().focusObject(player);
     }
 
     @Override
@@ -52,6 +54,7 @@ public class MMORPG extends BasicGame {
     public void render(GameContainer container, Graphics g) throws SlickException {
         map.render(container, g);
         player.render(container, g);
+        g.fill(new Circle(400,300, 2));
     }
 
     public static void main(String[] args) {
