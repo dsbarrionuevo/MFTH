@@ -27,8 +27,8 @@ public class SingleRowMapBuildingStrategy extends MapBuildingStrategy {
     @Override
     public void build(Map map) {
         this.rooms = new ArrayList<>();
-        int widthRoom = 20;
-        int heightRoom = 20;
+        int widthRoom = 16;
+        int heightRoom = 12;
         //create the rooms
         if (this.orientation == ORIENTATION_HORIZONTAL) {
             for (int i = 0; i < roomsCount; i++) {

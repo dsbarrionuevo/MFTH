@@ -66,8 +66,10 @@ public class Room {
     }
 
     public void update(GameContainer container, int delta) throws SlickException {
-        for (Placeable object : objects) {
-            object.update(container, delta);
+        for (int i = 0; i < objects.size(); i++) {
+            if (objects.get(i) != null) {
+                objects.get(i).update(container, delta);
+            }
         }
     }
 
@@ -78,8 +80,10 @@ public class Room {
                 room[i][j].render(container, g);
             }
         }
-        for (Placeable object : objects) {
-            object.render(container, g);
+        for (int i = 0; i < objects.size(); i++) {
+            if (objects.get(i) != null) {
+                objects.get(i).render(container, g);
+            }
         }
     }
 
@@ -105,6 +109,17 @@ public class Room {
 
     public void move(Vector2f moveFactor) {
         this.move(moveFactor, null);
+    }
+
+    public void moveToPosition(Vector2f newPosition) {
+        for (int i = 0; i < room.length; i++) {
+            for (int j = 0; j < room[0].length; j++) {
+                room[i][j].setPosition(new Vector2f(tileWidth * j + newPosition.x, tileHeight * i + newPosition.y));
+            }
+        }
+        for (Placeable object : objects) {
+            object.setPosition(newPosition);
+        }
     }
 
     public Tile getTileByPositionInRoom(int tileX, int tileY) {
@@ -136,7 +151,7 @@ public class Room {
         int tileX = (int) (Math.floor((absolutePosition.x) / tileWidth));
         int tileY = (int) (Math.floor((absolutePosition.y) / tileHeight));
         foundTile = room[tileY][tileX];
-        System.out.println("Current tileX: " + tileX + ", tileY: " + tileY);
+        //System.out.println("Current tileX: " + tileX + ", tileY: " + tileY);
         return foundTile;
     }
 
@@ -204,6 +219,7 @@ public class Room {
         Vector2f movement = new Vector2f();
         movement.x = 0;
         movement.y = 0;
+        //direction = -1;
         switch (direction) {
             case (DIRECTION_WEST):
                 limit = definedLimitWidth;
@@ -255,6 +271,7 @@ public class Room {
     public boolean hitTheDoor(Placeable placeable) {
         if (getCurrentTile(placeable).getType() == Tile.DOOR_TILE) {
             map.nextRoom(this, (DoorTile) getCurrentTile(placeable), placeable);
+            this.moveToPosition(new Vector2f(0, 0));
             return true;
         }
         return false;
@@ -279,6 +296,10 @@ public class Room {
         placeable.setRoom(this);
         this.placeObject(placeable, tileX, tileY);
         this.objects.add(placeable);
+    }
+
+    public void removeObject(Placeable placeable) {
+        this.objects.remove(placeable);
     }
 
     public void addPassage(Room connectedTo) {

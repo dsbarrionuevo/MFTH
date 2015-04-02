@@ -1,21 +1,15 @@
 package mmorpg;
 
-import java.util.ArrayList;
-import mmorpg.debug.TimedMessage;
 import mmorpg.map.Map;
-import mmorpg.items.Treasure;
 import mmorpg.player.Player;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import mmorpg.camera.Camera;
-import mmorpg.enemies.Enemy;
-import mmorpg.enemies.SmartWallEnemy;
 import org.newdawn.slick.AppGameContainer;
 import org.newdawn.slick.BasicGame;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.SlickException;
-import org.newdawn.slick.geom.Circle;
 import org.newdawn.slick.geom.Vector2f;
 
 /**
@@ -38,10 +32,10 @@ public class MMORPG extends BasicGame {
     @Override
     public void init(GameContainer container) throws SlickException {
         Camera.createCamera(new Vector2f(0f, 0f), container.getWidth(), container.getHeight());
-        Camera.getInstance().setPadding(1);
-        map = new Map(1);
+        Camera.getInstance().setPadding(4);
+        map = new Map(5);
         player = new Player();
-        map.getCurrentRoom().addObject(player, 10, 10);
+        map.getCurrentRoom().addObject(player, 1, 1);
         map.getCurrentRoom().focusObject(player);
     }
 

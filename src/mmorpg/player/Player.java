@@ -22,7 +22,7 @@ public class Player extends Movable implements Placeable {
     private long timerToHitTheDoor;
 
     public Player() {
-        super(50f, new Vector2f(), new Rectangle(0, 0, 20, 20));
+        super(30f, new Vector2f(), new Rectangle(0, 0, 20, 20));
         this.timerHitTheDoor = 0;
         this.timerToHitTheDoor = 1 * 1000;
     }
@@ -31,14 +31,13 @@ public class Player extends Movable implements Placeable {
     public void update(GameContainer container, int delta) {
         move(container, delta);
         //check if stand on door
-        /*
+
         if (this.timerHitTheDoor > this.timerToHitTheDoor) {
             if (room.hitTheDoor(this)) {
                 this.timerHitTheDoor = 0;
             }
         }
         this.timerHitTheDoor += delta;
-                */
     }
 
     @Override
