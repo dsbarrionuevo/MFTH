@@ -1,9 +1,13 @@
 package mmorpg.map;
 
+import java.util.ArrayList;
 import mmorpg.common.Placeable;
 import mmorpg.map.buildingstrategies.MapBuildingStrategy;
+import mmorpg.map.buildingstrategies.MapBuildingStrategy.Passage;
 import mmorpg.map.buildingstrategies.SingleRowMapBuildingStrategy;
 import mmorpg.map.room.Room;
+import mmorpg.map.tiles.DoorTile;
+import mmorpg.map.tiles.Tile;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.SlickException;
@@ -14,23 +18,26 @@ import org.newdawn.slick.SlickException;
  */
 public class Map {
 
-    private Room[] rooms;
+    private ArrayList<Room> rooms;
+    private ArrayList<Passage> passages;
     private int currentRoom;
     private MapBuildingStrategy buildingStrategy;
 
     public Map(int roomsCount) {
         this.buildingStrategy = new SingleRowMapBuildingStrategy(SingleRowMapBuildingStrategy.ORIENTATION_HORIZONTAL, roomsCount, 50, 50);
-        this.rooms = buildingStrategy.build(this);
+        this.buildingStrategy.build(this);
+        this.rooms = this.buildingStrategy.getRooms();
+        this.passages = this.buildingStrategy.getPassages();
         this.currentRoom = 0;
     }
 
     public void render(GameContainer container, Graphics g) throws SlickException {
-        this.rooms[currentRoom].render(container, g);
+        this.rooms.get(currentRoom).render(container, g);
     }
 
     public boolean placeObject(Placeable placeable, int room, int tileX, int tileY) {
-        placeable.setRoom(this.rooms[room]);
-        return this.rooms[room].placeObject(placeable, tileX, tileY);
+        placeable.setRoom(this.rooms.get(room));
+        return this.rooms.get(room).placeObject(placeable, tileX, tileY);
     }
 
     public boolean placeObject(Placeable placeable, int tileX, int tileY) {
@@ -38,25 +45,27 @@ public class Map {
     }
 
     public Room getRoom(int room) {
-        if (room < 0 || room > rooms.length - 1) {
+        if (room < 0 || room > rooms.size() - 1) {
             return null;
         }
-        return this.rooms[room];
+        return this.rooms.get(room);
     }
 
     public Room getCurrentRoom() {
         return this.getRoom(this.currentRoom);
     }
 
-    public Room nextRoom(Placeable placeable) {
-        Room currentRoom = placeable.getRoom();
-        
-        //... siempre avanza a la siguiente sala...
-        /*
-         this.currentRoom = currentRoomId + 1;
-         this.rooms[currentRoom].placeObject(placeable, 1, 1);
-         return this.rooms[currentRoom];
-         */
+    public Room nextRoom(Room currentRoom, Tile doorTile, Placeable placeable) {
+        //Room currentRoom = placeable.getRoom();//this or through parameters
+        //Passage found = buildingStrategy.findPassageByRoom(currentRoom);
+        DoorTile otherDoor = ((DoorTile) doorTile).getConnectedTo();
+        Room nextRoom = otherDoor.getMyRoom();
+        placeObject(placeable, nextRoom.getRoomId(), otherDoor.getTileX(), otherDoor.getTileY());
+        changeRoom(nextRoom.getRoomId());
         return null;
+    }
+
+    public void changeRoom(int idNewRoom) {
+        this.currentRoom = idNewRoom;
     }
 }

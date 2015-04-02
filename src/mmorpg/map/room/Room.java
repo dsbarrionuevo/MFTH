@@ -56,13 +56,25 @@ public class Room {
         }
     }
 
+    @Deprecated
     public boolean putDoor(Room fromRoom, Room toRoom, int tileX, int tileY) {
         //only on borders...
         if ((tileX == 0 || tileX == room[0].length - 1) || (tileY == 0 || tileY == room.length - 1)) {
-            room[tileY][tileX] = new DoorTile(fromRoom, toRoom, new Vector2f(tileX * tileWidth, tileY * tileHeight), tileWidth, tileHeight);
+            room[tileY][tileX] = new DoorTile(fromRoom, null, new Vector2f(tileX * tileWidth, tileY * tileHeight), tileWidth, tileHeight);
             return true;
         }
         return false;
+    }
+
+    public DoorTile putDoor(int tileX, int tileY) {
+        //only on borders...
+        if ((tileX == 0 || tileX == room[0].length - 1) || (tileY == 0 || tileY == room.length - 1)) {
+            room[tileY][tileX] = new DoorTile(null, null, new Vector2f(tileX * tileWidth, tileY * tileHeight), tileWidth, tileHeight);
+            room[tileY][tileX].setTileX(tileX);
+            room[tileY][tileX].setTileY(tileY);
+            return (DoorTile)room[tileY][tileX];
+        }
+        return null;
     }
 
     public void render(GameContainer container, Graphics g) throws SlickException {
@@ -127,7 +139,7 @@ public class Room {
         int tileX = (int) (Math.floor((absolutePosition.x) / tileWidth));
         int tileY = (int) (Math.floor((absolutePosition.y) / tileHeight));
         foundTile = room[tileY][tileX];
-        //System.out.println("Current tileX: " + tileX + ", tileY: " + tileY);
+//        System.out.println("Current tileX: " + tileX + ", tileY: " + tileY);
         return foundTile;
     }
 
@@ -190,45 +202,49 @@ public class Room {
         //   = 50*1 + 50/2 - 20/2
         //   = tileWidth*tilesPadding + tileWidth/2 + placeble.getWidth()/2
         float limit = 0f;
-        float definedLimit = tileWidth * camera.getPadding() + tileWidth / 2 + placeable.getWidth() / 2;
+        float definedLimitWidth = tileWidth * camera.getPadding() + tileWidth / 2 - placeable.getWidth() / 2;
+        float definedLimitHeight = tileHeight * camera.getPadding() + tileHeight / 2 - placeable.getHeight() / 2;
+        direction = -1;
         switch (direction) {
             case (DIRECTION_WEST):
-                limit = definedLimit;
+                limit = definedLimitWidth;
                 if (position.x < limit) {
                     moveX(distanceMoving);
                     allowMoving = false;
                 }
                 break;
             case (DIRECTION_EAST):
-                limit = camera.getWidth() - definedLimit;
+                limit = camera.getWidth() - definedLimitWidth;
                 if (position.x > limit) {
                     moveX(distanceMoving * (-1));
                     allowMoving = false;
                 }
                 break;
             case (DIRECTION_NORTH):
-                limit = definedLimit;
+                limit = definedLimitHeight;
                 if (position.y < limit) {
                     moveY(distanceMoving);
                     allowMoving = false;
                 }
                 break;
             case (DIRECTION_SOUTH):
-                limit = camera.getHeight() - definedLimit;
+                limit = camera.getHeight() - definedLimitHeight;
                 if (position.y > limit) {
                     moveY(distanceMoving * (-1));
                     allowMoving = false;
                 }
                 break;
         }
-        return allowMoving;
+        return true;
     }
 
-    public void hitTheDoor(Placeable placeable) {
+    public boolean hitTheDoor(Placeable placeable) {
         if (getCurrentTile(placeable).getType() == Tile.DOOR_TILE) {
-            Room nextRoom = map.nextRoom(placeable);
-            //placeable.setRoom(nextRoom);
+            map.nextRoom(this, getCurrentTile(placeable), placeable);
+            //map.placeObject(placeable, nextRoom.getRoomId(), roomId, roomId);
+            return true;
         }
+        return false;
     }
 
     public Tile[] getTilesOfType(int tileType) {
@@ -272,6 +288,11 @@ public class Room {
 
     public void setCamera(Camera camera) {
         this.camera = camera;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return ((Room) obj).getRoomId() == this.getRoomId();
     }
 
 }
