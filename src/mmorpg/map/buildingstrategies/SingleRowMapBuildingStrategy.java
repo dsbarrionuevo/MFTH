@@ -31,8 +31,8 @@ public class SingleRowMapBuildingStrategy extends MapBuildingStrategy {
         //create the rooms
         if (this.orientation == ORIENTATION_HORIZONTAL) {
             for (int i = 0; i < roomsCount; i++) {
-                widthRoom = (int)(Math.random() * 14) + 4;
-                heightRoom = (int)(Math.random() * 8) + 4;
+                widthRoom = (int) (Math.random() * 14) + 4;
+                heightRoom = (int) (Math.random() * 8) + 4;
                 RoomBuildingStrategy roomBuildingStrategy = new BorderRoomBuildingStrategy(widthRoom, heightRoom, tileWidth, tileHeight);
                 Room newRoom = new Room(i, roomBuildingStrategy);
                 newRoom.setMap(map);
@@ -40,15 +40,14 @@ public class SingleRowMapBuildingStrategy extends MapBuildingStrategy {
             }
         } else if (this.orientation == ORIENTATION_VERTICAL) {
             for (int i = 0; i < roomsCount; i++) {
-                widthRoom = (int)(Math.random() * 14) + 4;
-                heightRoom = (int)(Math.random() * 8) + 4;
+                widthRoom = (int) (Math.random() * 14) + 4;
+                heightRoom = (int) (Math.random() * 8) + 4;
                 RoomBuildingStrategy roomBuildingStrategy = new BorderRoomBuildingStrategy(widthRoom, heightRoom, tileWidth, tileHeight);
                 Room newRoom = new Room(i, roomBuildingStrategy);
                 newRoom.setMap(map);
                 rooms.add(newRoom);
             }
         }
-
         //now create the passages
         for (int i = 0; i < rooms.size(); i++) {
             Room currentRoom = rooms.get(i);
@@ -59,12 +58,13 @@ public class SingleRowMapBuildingStrategy extends MapBuildingStrategy {
                     int randomPositionNextRoom = ((int) (Math.random() * (nextRoom.getRoomHeight() - 2)) + 1);
                     connectRooms(currentRoom, currentRoom.getRoomWidth() - 1, randomPositionCurrentRoom, nextRoom, 0, randomPositionNextRoom);
                 } else if (this.orientation == ORIENTATION_VERTICAL) {
-                    int randomPositionCurrentRoom = ((int) (Math.random() * (currentRoom.getRoomWidth()- 2)) + 1);
-                    int randomPositionNextRoom = ((int) (Math.random() * (nextRoom.getRoomWidth()- 2)) + 1);
+                    int randomPositionCurrentRoom = ((int) (Math.random() * (currentRoom.getRoomWidth() - 2)) + 1);
+                    int randomPositionNextRoom = ((int) (Math.random() * (nextRoom.getRoomWidth() - 2)) + 1);
                     connectRooms(currentRoom, randomPositionCurrentRoom, currentRoom.getRoomHeight() - 1, nextRoom, randomPositionNextRoom, 0);
                 }
             }
         }
+        this.firstRoom = rooms.get(0);
     }
 
 }

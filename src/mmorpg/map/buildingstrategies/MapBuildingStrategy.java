@@ -14,6 +14,7 @@ public abstract class MapBuildingStrategy {
     protected int roomsCount;
     protected float tileWidth, tileHeight;
     protected ArrayList<Room> rooms;
+    protected Room firstRoom;
 
     public MapBuildingStrategy(int roomsCount, float tileWidth, float tileHeight) {
         this.tileWidth = tileWidth;
@@ -26,6 +27,19 @@ public abstract class MapBuildingStrategy {
 
     public ArrayList<Room> getRooms() {
         return rooms;
+    }
+
+    public Room getRoomById(int roomId) {
+        for (Room room : rooms) {
+            if (room.getRoomId() == roomId) {
+                return room;
+            }
+        }
+        return null;
+    }
+
+    public Room getFirstRoom() {
+        return firstRoom;
     }
 
     protected void connectRooms(Room room1, int tileX1, int tileY1, Room room2, int tileX2, int tileY2) {
