@@ -9,6 +9,7 @@ import mmorpg.map.Map;
 import mmorpg.map.room.buildingstrategies.RoomBuildingStrategy;
 import mmorpg.map.tiles.DoorTile;
 import mmorpg.map.tiles.Tile;
+import mmorpg.player.Player;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.SlickException;
@@ -29,14 +30,13 @@ public class Room {
     private RoomBuildingStrategy buildingStrategy;
     private final float tileWidth, tileHeight;
     private int roomId, roomWidth, roomHeight;
-    private ArrayList<Room> passages;
     //
     private Camera camera;
-    private Vector2f offset;
     private Map map;
     //
     //Displayable objects
     ArrayList<Placeable> objects;
+    //las posiciones iniciales de los enemigos
     HashMap<Placeable, Vector2f> initPositions;
 
     public Room(int roomId, RoomBuildingStrategy buildingStrategy) {
@@ -44,9 +44,7 @@ public class Room {
         this.tileWidth = 50;
         this.tileHeight = 50;
         this.buildingStrategy = buildingStrategy;
-        this.passages = new ArrayList<>();
         this.camera = Camera.getInstance();
-        this.offset = new Vector2f();
         this.objects = new ArrayList<>();
         this.initPositions = new HashMap<>();
         this.build();
@@ -57,8 +55,9 @@ public class Room {
         this.roomWidth = room[0].length;
         this.roomHeight = room.length;
         //add enemies
+
         if (this.roomId == 1) {
-            for (int i = 0; i < 1; i++) {
+            for (int i = 0; i < 0; i++) {
                 WallEnemy enemy = new WallEnemy();
                 addObject(enemy, 2, 2);
                 initPositions.put(enemy, new Vector2f(2, 2));
@@ -157,8 +156,8 @@ public class Room {
          int tileY = (int) (Math.floor((placeable.getPosition().y) / tileHeight));*/
         Vector2f mainPosition = room[0][0].getPosition();
         Vector2f absolutePosition = new Vector2f(
-                Math.abs(this.offset.x) + placeable.getPosition().x - mainPosition.x,
-                Math.abs(this.offset.y) + placeable.getPosition().y - mainPosition.y
+                placeable.getPosition().x - mainPosition.x,
+                placeable.getPosition().y - mainPosition.y
         );
         int tileX = (int) (Math.floor((absolutePosition.x) / tileWidth));
         int tileY = (int) (Math.floor((absolutePosition.y) / tileHeight));
@@ -314,14 +313,6 @@ public class Room {
         this.objects.remove(placeable);
     }
 
-    public void addPassage(Room connectedTo) {
-        for (Room passage : passages) {
-            if (!passage.equals(connectedTo)) {
-                this.passages.add(connectedTo);
-            }
-        }
-    }
-
     public int getRoomWidth() {
         return roomWidth;
     }
@@ -345,6 +336,21 @@ public class Room {
     @Override
     public boolean equals(Object obj) {
         return ((Room) obj).getRoomId() == this.getRoomId();
+    }
+
+    public boolean isInsideTile(Placeable placeable) {
+        Tile tile = getCurrentTile(placeable);
+        if (tile == null) {
+            return false;
+        }
+        Vector2f tilePosition = tile.getPosition();
+        Vector2f position = placeable.getPosition();
+        boolean r = (position.x > tilePosition.x
+                && position.y > tilePosition.y
+                && position.x < (tilePosition.x + tile.getWidth() - placeable.getWidth())
+                && position.y < (tilePosition.y + tile.getHeight() - placeable.getHeight()));
+        System.out.println(r);
+        return r;
     }
 
 }

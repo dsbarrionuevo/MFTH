@@ -22,7 +22,7 @@ public class Player extends Movable implements Placeable {
     private long timerToHitTheDoor;
 
     public Player() {
-        super(30f, new Vector2f(), new Rectangle(0, 0, 20, 20));
+        super(21f, new Vector2f(), new Rectangle(0, 0, 20, 20));
         this.timerHitTheDoor = 0;
         this.timerToHitTheDoor = 1 * 1000;
     }

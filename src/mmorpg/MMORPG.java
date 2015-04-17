@@ -33,7 +33,7 @@ public class MMORPG extends BasicGame {
     public void init(GameContainer container) throws SlickException {
         Camera.createCamera(new Vector2f(0f, 0f), container.getWidth(), container.getHeight());
         Camera.getInstance().setPadding(4);
-        map = new Map(5);
+        map = new Map(1);
         player = new Player();
         map.getCurrentRoom().addObject(player, 1, 1);
         map.getCurrentRoom().focusObject(player);
