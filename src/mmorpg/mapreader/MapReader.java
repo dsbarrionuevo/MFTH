@@ -14,11 +14,11 @@ public class MapReader {
 
     private MapFile map;
 
-    public MapReader(String mapFileName) {
-        this.buildMapFormFile(mapFileName);
+    public MapReader() {
+
     }
 
-    public final void buildMapFormFile(String mapFileName) {
+    public MapFile buildMapFormFile(String mapFileName) {
         try {
             String mapFile = SystemIO.readFile(mapFileName);
             map = new MapFile();
@@ -69,9 +69,11 @@ public class MapReader {
                         getMap(currentRoomFileJson, "map")
                 );
             }
+            map.setRooms(rooms);
         } catch (Exception ex) {
             Logger.getLogger(MapReader.class.getName()).log(Level.SEVERE, null, ex);
         }
+        return this.map;
     }
 
     public static int[][] getMap(JSONObject obj, String mapName) {
@@ -88,6 +90,6 @@ public class MapReader {
     }
 
     public static void main(String[] args) {
-        new MapReader("res/map2.txt");
+        new MapReader().buildMapFormFile("res/map2.txt");
     }
 }

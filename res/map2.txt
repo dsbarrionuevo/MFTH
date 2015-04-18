@@ -27,7 +27,7 @@
 	"room_types":[
 		{
 			"id_room_type":1,
-			"name":"forrest",
+			"name":"forest",
 			"tiles":[
 				{
 					"id_tile":0,

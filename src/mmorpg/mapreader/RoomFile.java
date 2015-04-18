@@ -16,4 +16,16 @@ public class RoomFile {
         this.map = map;
     }
 
+    public int getId() {
+        return id;
+    }
+
+    public RoomType getRoomType() {
+        return roomType;
+    }
+
+    public int[][] getMap() {
+        return map;
+    }
+
 }

@@ -16,6 +16,15 @@ public class RoomType {
         this.tiles = tiles;
     }
 
+    public TileFile findTileFile(int id) {
+        for (int i = 0; i < tiles.length; i++) {
+            if (tiles[i].getId() == id) {
+                return tiles[i];
+            }
+        }
+        return null;
+    }
+
     public int getId() {
         return id;
     }

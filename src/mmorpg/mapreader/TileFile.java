@@ -16,4 +16,16 @@ public class TileFile {
         this.resourcePath = resourcePath;
     }
 
+    public int getId() {
+        return id;
+    }
+
+    public TileType getTileType() {
+        return tileType;
+    }
+
+    public String getResourcePath() {
+        return resourcePath;
+    }
+
 }

@@ -23,11 +23,20 @@ public class MapFile {
         }
         return null;
     }
-    
+
     public RoomType findRoomType(int id) {
         for (int i = 0; i < roomTypes.length; i++) {
             if (roomTypes[i].getId() == id) {
                 return roomTypes[i];
+            }
+        }
+        return null;
+    }
+    
+    public RoomFile findRoomFile(int id){
+        for (int i = 0; i < rooms.length; i++) {
+            if (rooms[i].getId() == id) {
+                return rooms[i];
             }
         }
         return null;
@@ -51,6 +60,26 @@ public class MapFile {
 
     public void setRooms(RoomFile[] rooms) {
         this.rooms = rooms;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public int[][] getMap() {
+        return map;
+    }
+
+    public TileType[] getTileTypes() {
+        return tileTypes;
+    }
+
+    public RoomType[] getRoomTypes() {
+        return roomTypes;
+    }
+
+    public RoomFile[] getRooms() {
+        return rooms;
     }
 
 }
