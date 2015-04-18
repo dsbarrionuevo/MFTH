@@ -68,7 +68,9 @@ public class Room {
     public DoorTile putDoor(int tileX, int tileY) {
         //only on borders...
         if ((tileX == 0 || tileX == room[0].length - 1) || (tileY == 0 || tileY == room.length - 1)) {
-            room[tileY][tileX] = new DoorTile(tileX, tileY, tileWidth, tileHeight);
+            if (room[tileY][tileX].getType() != Tile.DOOR_TILE) {
+                room[tileY][tileX] = new DoorTile(tileX, tileY, tileWidth, tileHeight);
+            }
             return (DoorTile) room[tileY][tileX];
         }
         return null;

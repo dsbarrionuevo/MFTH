@@ -4,6 +4,7 @@ import mmorpg.common.Drawable;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
+import org.newdawn.slick.Image;
 import org.newdawn.slick.geom.Rectangle;
 import org.newdawn.slick.geom.Vector2f;
 
@@ -19,8 +20,9 @@ public abstract class Tile extends Drawable {
 
     protected Color color;
     protected boolean walkable;
-
+    //
     protected int tileX, tileY;
+    protected Image image;
 
     public Tile(int tileX, int tileY, float width, float height, Color color, boolean walkable) {
         super(new Vector2f(tileX * width, tileY * height), new Rectangle(0, 0, width, height));
@@ -41,10 +43,14 @@ public abstract class Tile extends Drawable {
 
     @Override
     public void render(GameContainer gc, Graphics g) {
-        g.setColor(this.color);
         this.body.setX(position.x);
         this.body.setY(position.y);
-        g.fill(body);
+        if (this.image == null) {
+            g.setColor(this.color);
+            g.fill(body);
+        } else {
+            g.drawImage(image, position.x, position.y);
+        }
         g.setColor(Color.black);
         g.draw(body);
     }
@@ -78,6 +84,11 @@ public abstract class Tile extends Drawable {
     @Override
     public boolean equals(Object obj) {
         return ((Tile) obj).getId().equalsIgnoreCase(this.getId());
+    }
+
+    //
+    public void setImage(Image image) {
+        this.image = image;
     }
 
 }

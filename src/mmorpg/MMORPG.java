@@ -47,7 +47,6 @@ public class MMORPG extends BasicGame {
     @Override
     public void render(GameContainer container, Graphics g) throws SlickException {
         map.render(container, g);
-        //g.fill(new Circle(400,300, 2));
     }
 
     public static void main(String[] args) {
