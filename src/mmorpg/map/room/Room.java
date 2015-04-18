@@ -299,7 +299,10 @@ public class Room {
                 }
             }
         }
-        result = (Tile[]) foundTiles.toArray();
+        result = new Tile[foundTiles.size()];
+        for (int i = 0; i < foundTiles.size(); i++) {
+            result[i] = foundTiles.get(i);
+        }
         return result;
     }
 
