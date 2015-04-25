@@ -31,13 +31,7 @@ public class Player extends Movable implements Placeable {
     public void update(GameContainer container, int delta) {
         move(container, delta);
         //check if stand on door
-
-        if (this.timerHitTheDoor > this.timerToHitTheDoor) {
-            if (room.hitTheDoor(this)) {
-                this.timerHitTheDoor = 0;
-            }
-        }
-        this.timerHitTheDoor += delta;
+        checkHitDoor(delta);
     }
 
     @Override
@@ -46,6 +40,15 @@ public class Player extends Movable implements Placeable {
         this.body.setX(position.x);
         this.body.setY(position.y);
         g.fill(body);
+    }
+
+    private void checkHitDoor(int delta) {
+        if (this.timerHitTheDoor > this.timerToHitTheDoor) {
+            if (room.hitTheDoor(this)) {
+                this.timerHitTheDoor = 0;
+            }
+        }
+        this.timerHitTheDoor += delta;
     }
 
     private void move(GameContainer container, int delta) {

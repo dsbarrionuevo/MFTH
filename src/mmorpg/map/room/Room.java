@@ -26,6 +26,11 @@ public class Room {
     public static final int DIRECTION_EAST = 2;
     public static final int DIRECTION_WEST = 3;
     //
+    public static final int CORNER_TOP_LEFT = 0;
+    public static final int CORNER_TOP_RIGHT = 1;
+    public static final int CORNER_BOTTOM_LEFT = 2;
+    public static final int CORNER_BOTTOM_RIGHT = 3;
+    //
     private Tile[][] room;
     private RoomBuildingStrategy buildingStrategy;
     private final float tileWidth, tileHeight;
@@ -151,70 +156,122 @@ public class Room {
     }
 
     public Tile getCurrentTile(Placeable placeable) {
+        return getTileInCorner(placeable, CORNER_TOP_LEFT);
+    }
+
+    private Tile getTileInCorner(Placeable placeable, int corner) {
         Tile foundTile = null;
-        //int tileX = (int) (Math.floor((placeable.getPosition().x + placeable.getWidth() / 2 - tileWidth / 2) / tileWidth));
-        //int tileY = (int) (Math.floor((placeable.getPosition().y + placeable.getHeight()/2 - tileHeight/2) / tileHeight));
-        /*int tileX = (int) (Math.floor((placeable.getPosition().x) / tileWidth));
-         int tileY = (int) (Math.floor((placeable.getPosition().y) / tileHeight));*/
         Vector2f mainPosition = room[0][0].getPosition();
         Vector2f absolutePosition = new Vector2f(
                 placeable.getPosition().x - mainPosition.x,
                 placeable.getPosition().y - mainPosition.y
         );
+        switch (corner) {
+            case (CORNER_TOP_LEFT)://.:
+                //por defecto esta bien
+                break;
+            case (CORNER_TOP_RIGHT)://:.
+                absolutePosition.x = placeable.getPosition().x + placeable.getWidth() - mainPosition.x;
+                break;
+            case (CORNER_BOTTOM_RIGHT)://:'
+                absolutePosition.x = placeable.getPosition().x + placeable.getWidth() - mainPosition.x;
+                absolutePosition.y = placeable.getPosition().y + placeable.getHeight() - mainPosition.y;
+                break;
+            case (CORNER_BOTTOM_LEFT)://':
+                absolutePosition.y = placeable.getPosition().y + placeable.getHeight() - mainPosition.y;
+                break;
+        }
         int tileX = (int) (Math.floor((absolutePosition.x) / tileWidth));
         int tileY = (int) (Math.floor((absolutePosition.y) / tileHeight));
-        foundTile = room[tileY][tileX];
-        //System.out.println("Current tileX: " + tileX + ", tileY: " + tileY);
+        if (tileX >= 0 && tileX <= room[0].length - 1 && tileY >= 0 && tileY <= room.length - 1) {
+            foundTile = room[tileY][tileX];
+        }
         return foundTile;
     }
 
     public Tile findNextTile(Placeable placeable, int direction) {
+        return findNextTile(placeable, direction, CORNER_TOP_LEFT);
+    }
+
+    public Tile findNextTile(Placeable placeable, int direction, int corner) {
         Tile foundTile = null;
-        Tile currentTile = getCurrentTile(placeable);
-        int tileX = currentTile.getTileX();
-        int tileY = currentTile.getTileY();
-        switch (direction) {
-            case (DIRECTION_WEST):
-                if (tileX - 1 >= 0) {
-                    foundTile = room[tileY][tileX - 1];
-                }
-                break;
-            case (DIRECTION_EAST):
-                if (tileX + 1 <= room[0].length - 1) {
-                    foundTile = room[tileY][tileX + 1];
-                }
-                break;
-            case (DIRECTION_NORTH):
-                if (tileY - 1 >= 0) {
-                    foundTile = room[tileY - 1][tileX];
-                }
-                break;
-            case (DIRECTION_SOUTH):
-                if (tileY + 1 <= room.length - 1) {
-                    foundTile = room[tileY + 1][tileX];
-                }
-                break;
+        Tile currentTile = getTileInCorner(placeable, corner);
+        if (currentTile != null) {
+            int tileX = currentTile.getTileX();
+            int tileY = currentTile.getTileY();
+            switch (direction) {
+                case (DIRECTION_WEST):
+                    if (tileX - 1 >= 0) {
+                        foundTile = room[tileY][tileX - 1];
+                    }
+                    break;
+                case (DIRECTION_EAST):
+                    if (tileX + 1 <= room[0].length - 1) {
+                        foundTile = room[tileY][tileX + 1];
+                    }
+                    break;
+                case (DIRECTION_NORTH):
+                    if (tileY - 1 >= 0) {
+                        foundTile = room[tileY - 1][tileX];
+                    }
+                    break;
+                case (DIRECTION_SOUTH):
+                    if (tileY + 1 <= room.length - 1) {
+                        foundTile = room[tileY + 1][tileX];
+                    }
+                    break;
+            }
         }
         return foundTile;
     }
 
     public boolean canMoveTo(Placeable placeable, int direction) {
-        Tile nextTile = this.findNextTile(placeable, direction);
+        Tile nextTile1 = null, nextTile2 = null;
+        switch (direction) {
+            case (DIRECTION_WEST):
+                nextTile1 = findNextTile(placeable, direction, CORNER_TOP_LEFT);
+                nextTile2 = findNextTile(placeable, direction, CORNER_BOTTOM_LEFT);
+                break;
+            case (DIRECTION_EAST):
+                nextTile1 = findNextTile(placeable, direction, CORNER_TOP_RIGHT);
+                nextTile2 = findNextTile(placeable, direction, CORNER_BOTTOM_RIGHT);
+                break;
+            case (DIRECTION_NORTH):
+                nextTile1 = findNextTile(placeable, direction, CORNER_TOP_LEFT);
+                nextTile2 = findNextTile(placeable, direction, CORNER_TOP_RIGHT);
+                break;
+            case (DIRECTION_SOUTH):
+                nextTile1 = findNextTile(placeable, direction, CORNER_BOTTOM_LEFT);
+                nextTile2 = findNextTile(placeable, direction, CORNER_BOTTOM_RIGHT);
+                break;
+        }
         Vector2f position = placeable.getPosition();
-        if (nextTile != null) {
-            if (nextTile.isWalkable()) {
+        if (nextTile1 != null && nextTile2 != null) {
+            if (nextTile1.isWalkable() && nextTile2.isWalkable()) {
                 return true;
             } else {
+                Tile nextTileNotWalkeable = (nextTile1.isWalkable()) ? nextTile1 : nextTile2;
                 switch (direction) {
                     case (DIRECTION_WEST):
-                        return (Math.abs((nextTile.getPosition().x + nextTile.getWidth()) - position.x) >= 1);
+                        return (Math.abs((nextTileNotWalkeable.getPosition().x + nextTileNotWalkeable.getWidth()) - position.x) >= 1);
                     case (DIRECTION_EAST):
-                        return (Math.abs((nextTile.getPosition().x) - (position.x)) >= placeable.getWidth() + 2);
+                        return (Math.abs((nextTileNotWalkeable.getPosition().x) - (position.x)) >= placeable.getWidth() + 2);
                     case (DIRECTION_NORTH):
-                        return (Math.abs((nextTile.getPosition().y + nextTile.getHeight()) - position.y) > 1);
+                        return (Math.abs((nextTileNotWalkeable.getPosition().y + nextTileNotWalkeable.getHeight()) - position.y) >= 1);
                     case (DIRECTION_SOUTH):
-                        return (Math.abs((nextTile.getPosition().y) - (position.y)) >= placeable.getHeight() + 2);
+                        return (Math.abs((nextTileNotWalkeable.getPosition().y) - (position.y)) >= placeable.getHeight() + 2);
                 }
+            }
+        } else {
+            switch (direction) {
+                case (DIRECTION_WEST):
+                    return (Math.abs((room[0][0].getPosition().x) - (position.x)) >= 1);
+                case (DIRECTION_EAST):
+                    return (Math.abs((room[0][roomWidth - 1].getPosition().x + room[0][roomWidth - 1].getWidth()) - (position.x)) >= placeable.getWidth() + 2);
+                case (DIRECTION_NORTH):
+                    return (Math.abs((room[0][0].getPosition().y) - (position.y)) >= 1);
+                case (DIRECTION_SOUTH):
+                    return (Math.abs((room[roomHeight - 1][0].getPosition().y + room[roomHeight - 1][0].getHeight()) - (position.y)) >= placeable.getHeight() + 2);
             }
         }
         return false;
@@ -272,7 +329,6 @@ public class Room {
 
     public void focusObject(Placeable placeable) {
         Vector2f position = this.getCurrentTile(placeable).getPosition();
-        Vector2f mainPosition = room[0][0].getPosition();
         Vector2f center = new Vector2f(camera.getWidth() / 2, camera.getHeight() / 2);
         Vector2f finalPosition = new Vector2f(
                 center.x - position.getX() - Math.abs(tileWidth / 2),
@@ -282,12 +338,47 @@ public class Room {
     }
 
     public boolean hitTheDoor(Placeable placeable) {
-        if (getCurrentTile(placeable).getType() == Tile.DOOR_TILE) {
+        if (isFullInsideTile(placeable) && getFullCurrentTile(placeable).getType() == Tile.DOOR_TILE) {
             map.nextRoom(this, (DoorTile) getCurrentTile(placeable), placeable);
             this.moveToPosition(new Vector2f(0, 0));
             return true;
         }
         return false;
+    }
+
+    public Tile getFullCurrentTile(Placeable placeable) {
+        Tile[] tiles = new Tile[]{
+            getTileInCorner(placeable, 0),
+            getTileInCorner(placeable, 1),
+            getTileInCorner(placeable, 2),
+            getTileInCorner(placeable, 3)
+        };
+        for (int i = 1; i < tiles.length; i++) {
+            if (tiles[i] != tiles[i - 1]) {
+                return null;
+            }
+        }
+        return tiles[0];
+    }
+
+    public boolean isFullInsideTile(Placeable placeable) {
+        return getFullCurrentTile(placeable) != null;
+    }
+
+    @Deprecated
+    public boolean isInsideTile(Placeable placeable) {
+        Tile tile = getCurrentTile(placeable);
+        if (tile == null) {
+            return false;
+        }
+        Vector2f tilePosition = tile.getPosition();
+        Vector2f position = placeable.getPosition();
+        boolean r = (position.x > tilePosition.x
+                && position.y > tilePosition.y
+                && position.x < (tilePosition.x + tile.getWidth() - placeable.getWidth())
+                && position.y < (tilePosition.y + tile.getHeight() - placeable.getHeight()));
+        System.out.println(r);
+        return r;
     }
 
     public Tile[] getTilesOfType(int tileType) {
@@ -341,21 +432,6 @@ public class Room {
     @Override
     public boolean equals(Object obj) {
         return ((Room) obj).getRoomId() == this.getRoomId();
-    }
-
-    public boolean isInsideTile(Placeable placeable) {
-        Tile tile = getCurrentTile(placeable);
-        if (tile == null) {
-            return false;
-        }
-        Vector2f tilePosition = tile.getPosition();
-        Vector2f position = placeable.getPosition();
-        boolean r = (position.x > tilePosition.x
-                && position.y > tilePosition.y
-                && position.x < (tilePosition.x + tile.getWidth() - placeable.getWidth())
-                && position.y < (tilePosition.y + tile.getHeight() - placeable.getHeight()));
-        System.out.println(r);
-        return r;
     }
 
 }
