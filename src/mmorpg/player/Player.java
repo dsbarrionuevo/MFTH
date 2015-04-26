@@ -1,12 +1,17 @@
 package mmorpg.player;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import mmorpg.common.Movable;
 import mmorpg.common.Placeable;
 import mmorpg.map.room.Room;
+import org.newdawn.slick.Animation;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
+import org.newdawn.slick.Image;
 import org.newdawn.slick.Input;
+import org.newdawn.slick.SlickException;
 import org.newdawn.slick.geom.Rectangle;
 import org.newdawn.slick.geom.Vector2f;
 
@@ -20,11 +25,15 @@ public class Player extends Movable implements Placeable {
     //
     private long timerHitTheDoor;
     private long timerToHitTheDoor;
+    //
+    private Animation walkingFront, walkingBack, walkingLeft, walkingRight;
 
     public Player() {
-        super(18f, new Vector2f(), new Rectangle(0, 0, 20, 20));
+        super(10f, new Vector2f(), new Rectangle(0, 0, 32, 32));
         this.timerHitTheDoor = 0;
         this.timerToHitTheDoor = 1 * 1000;
+        //
+        setupAnimations();
     }
 
     @Override
@@ -39,7 +48,11 @@ public class Player extends Movable implements Placeable {
         g.setColor(Color.blue);
         this.body.setX(position.x);
         this.body.setY(position.y);
-        g.fill(body);
+        if (graphic != null) {
+            ((Animation) graphic).draw(body.getX(), body.getY());
+        } else {
+            g.fill(body);
+        }
     }
 
     private void checkHitDoor(int delta) {
@@ -56,15 +69,70 @@ public class Player extends Movable implements Placeable {
         float moveFactor = speed * (delta / 100f);
         if (input.isKeyDown(Input.KEY_LEFT) && room.canMoveTo(this, Room.DIRECTION_WEST) && room.movingInsideCamera(this, moveFactor, Room.DIRECTION_WEST)) {
             position.x -= moveFactor;
+            graphic = walkingLeft;
+            updateAnimation(delta);
         }
         if (input.isKeyDown(Input.KEY_RIGHT) && room.canMoveTo(this, Room.DIRECTION_EAST) && room.movingInsideCamera(this, moveFactor, Room.DIRECTION_EAST)) {
             position.x += moveFactor;
+            graphic = walkingRight;
+            updateAnimation(delta);
         }
         if (input.isKeyDown(Input.KEY_UP) && room.canMoveTo(this, Room.DIRECTION_NORTH) && room.movingInsideCamera(this, moveFactor, Room.DIRECTION_NORTH)) {
             position.y -= moveFactor;
+            graphic = walkingBack;
+            updateAnimation(delta);
         }
         if (input.isKeyDown(Input.KEY_DOWN) && room.canMoveTo(this, Room.DIRECTION_SOUTH) && room.movingInsideCamera(this, moveFactor, Room.DIRECTION_SOUTH)) {
             position.y += moveFactor;
+            graphic = walkingFront;
+            updateAnimation(delta);
+        }
+        if (!input.isKeyDown(Input.KEY_LEFT) && !input.isKeyDown(Input.KEY_RIGHT) && !input.isKeyDown(Input.KEY_UP) && !input.isKeyDown(Input.KEY_DOWN)) {
+            if (graphic != null) {
+                ((Animation) graphic).stop();
+            }
+        }
+    }
+
+    private void updateAnimation(int delta) {
+        if (graphic != null) {
+            if (((Animation) graphic).isStopped()) {
+                ((Animation) graphic).start();
+            }
+            ((Animation) graphic).update(delta);
+        }
+    }
+
+    private void setupAnimations() {
+        try {
+            //speed: 10px ==> duration: 340 milis
+            int duration = 340;
+            //animations
+            String model = "model1";
+            this.walkingFront = new Animation(new Image[]{
+                new Image("res/images/players/"+model+"/front0.png"),
+                new Image("res/images/players/"+model+"/front1.png"),
+                new Image("res/images/players/"+model+"/front2.png")
+            }, duration, true);
+            this.walkingBack = new Animation(new Image[]{
+                new Image("res/images/players/"+model+"/back0.png"),
+                new Image("res/images/players/"+model+"/back1.png"),
+                new Image("res/images/players/"+model+"/back2.png")
+            }, duration, true);
+            this.walkingLeft = new Animation(new Image[]{
+                new Image("res/images/players/"+model+"/left0.png"),
+                new Image("res/images/players/"+model+"/left1.png"),
+                new Image("res/images/players/"+model+"/left2.png")
+            }, duration, true);
+            this.walkingRight = new Animation(new Image[]{
+                new Image("res/images/players/"+model+"/right0.png"),
+                new Image("res/images/players/"+model+"/right1.png"),
+                new Image("res/images/players/"+model+"/right2.png")
+            }, duration, true);
+            setGraphic(walkingFront);
+            ((Animation) graphic).stop();
+        } catch (SlickException ex) {
+            Logger.getLogger(Player.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 

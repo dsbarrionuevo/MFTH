@@ -2,6 +2,7 @@ package mmorpg.common;
 
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
+import org.newdawn.slick.Renderable;
 import org.newdawn.slick.geom.Shape;
 import org.newdawn.slick.geom.Vector2f;
 
@@ -15,6 +16,8 @@ public abstract class Drawable {
     protected boolean visible;
     protected Shape body;
     protected float width, height;
+    //
+    protected Renderable graphic;
 
     public Drawable(Vector2f position, Shape body, boolean visible) {
         this.position = position;
@@ -22,6 +25,7 @@ public abstract class Drawable {
         this.body = body;
         this.width = body.getWidth();
         this.height = body.getHeight();
+        this.graphic = null;
     }
 
     public Drawable(Vector2f position, Shape body) {
@@ -30,10 +34,10 @@ public abstract class Drawable {
 
     public abstract void render(GameContainer gc, Graphics g);
 
-    public boolean collide(Drawable target){
+    public boolean collide(Drawable target) {
         return this.getBody().intersects(target.getBody());
     }
-    
+
     public Vector2f getPosition() {
         return position;
     }
@@ -72,6 +76,14 @@ public abstract class Drawable {
 
     public void setHeight(float height) {
         this.height = height;
+    }
+
+    public Renderable getGraphic() {
+        return graphic;
+    }
+
+    public void setGraphic(Renderable graphic) {
+        this.graphic = graphic;
     }
 
 }
