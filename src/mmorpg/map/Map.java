@@ -23,7 +23,7 @@ public class Map {
     public Map(int roomsCount) {
         //this.buildingStrategy = new SingleRowMapBuildingStrategy(SingleRowMapBuildingStrategy.ORIENTATION_HORIZONTAL, roomsCount, 50, 50);
         //this.buildingStrategy = new FileMapBuildingStrategy("res/map1.txt", 50, 50);
-        this.buildingStrategy = new ImprovedFileMapBuildingStrategy("res/map2.txt", 50, 50);
+        this.buildingStrategy = new ImprovedFileMapBuildingStrategy("res/maps/map1.txt", 50, 50);
         this.buildingStrategy.build(this);
         this.rooms = this.buildingStrategy.getRooms();
         this.currentRoom = buildingStrategy.getFirstRoom();

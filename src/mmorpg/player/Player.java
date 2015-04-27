@@ -69,27 +69,33 @@ public class Player extends Movable implements Placeable {
         float moveFactor = speed * (delta / 100f);
         if (input.isKeyDown(Input.KEY_LEFT) && room.canMoveTo(this, Room.DIRECTION_WEST) && room.movingInsideCamera(this, moveFactor, Room.DIRECTION_WEST)) {
             position.x -= moveFactor;
-            graphic = walkingLeft;
             updateAnimation(delta);
         }
         if (input.isKeyDown(Input.KEY_RIGHT) && room.canMoveTo(this, Room.DIRECTION_EAST) && room.movingInsideCamera(this, moveFactor, Room.DIRECTION_EAST)) {
             position.x += moveFactor;
-            graphic = walkingRight;
             updateAnimation(delta);
         }
         if (input.isKeyDown(Input.KEY_UP) && room.canMoveTo(this, Room.DIRECTION_NORTH) && room.movingInsideCamera(this, moveFactor, Room.DIRECTION_NORTH)) {
             position.y -= moveFactor;
-            graphic = walkingBack;
             updateAnimation(delta);
         }
         if (input.isKeyDown(Input.KEY_DOWN) && room.canMoveTo(this, Room.DIRECTION_SOUTH) && room.movingInsideCamera(this, moveFactor, Room.DIRECTION_SOUTH)) {
             position.y += moveFactor;
-            graphic = walkingFront;
             updateAnimation(delta);
+        }
+        if (input.isKeyDown(Input.KEY_LEFT)) {
+            graphic = walkingLeft;
+        } else if (input.isKeyDown(Input.KEY_RIGHT)) {
+            graphic = walkingRight;
+        } else if (input.isKeyDown(Input.KEY_UP)) {
+            graphic = walkingBack;
+        } else if (input.isKeyDown(Input.KEY_DOWN)) {
+            graphic = walkingFront;
         }
         if (!input.isKeyDown(Input.KEY_LEFT) && !input.isKeyDown(Input.KEY_RIGHT) && !input.isKeyDown(Input.KEY_UP) && !input.isKeyDown(Input.KEY_DOWN)) {
             if (graphic != null) {
                 ((Animation) graphic).stop();
+                ((Animation) graphic).setCurrentFrame(0);
             }
         }
     }
@@ -110,24 +116,24 @@ public class Player extends Movable implements Placeable {
             //animations
             String model = "model1";
             this.walkingFront = new Animation(new Image[]{
-                new Image("res/images/players/"+model+"/front0.png"),
-                new Image("res/images/players/"+model+"/front1.png"),
-                new Image("res/images/players/"+model+"/front2.png")
+                new Image("res/images/players/" + model + "/front0.png"),
+                new Image("res/images/players/" + model + "/front1.png"),
+                new Image("res/images/players/" + model + "/front2.png")
             }, duration, true);
             this.walkingBack = new Animation(new Image[]{
-                new Image("res/images/players/"+model+"/back0.png"),
-                new Image("res/images/players/"+model+"/back1.png"),
-                new Image("res/images/players/"+model+"/back2.png")
+                new Image("res/images/players/" + model + "/back0.png"),
+                new Image("res/images/players/" + model + "/back1.png"),
+                new Image("res/images/players/" + model + "/back2.png")
             }, duration, true);
             this.walkingLeft = new Animation(new Image[]{
-                new Image("res/images/players/"+model+"/left0.png"),
-                new Image("res/images/players/"+model+"/left1.png"),
-                new Image("res/images/players/"+model+"/left2.png")
+                new Image("res/images/players/" + model + "/left0.png"),
+                new Image("res/images/players/" + model + "/left1.png"),
+                new Image("res/images/players/" + model + "/left2.png")
             }, duration, true);
             this.walkingRight = new Animation(new Image[]{
-                new Image("res/images/players/"+model+"/right0.png"),
-                new Image("res/images/players/"+model+"/right1.png"),
-                new Image("res/images/players/"+model+"/right2.png")
+                new Image("res/images/players/" + model + "/right0.png"),
+                new Image("res/images/players/" + model + "/right1.png"),
+                new Image("res/images/players/" + model + "/right2.png")
             }, duration, true);
             setGraphic(walkingFront);
             ((Animation) graphic).stop();
