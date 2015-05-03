@@ -70,9 +70,9 @@ public class Client implements Runnable {
                     //player = new Player();
                     JSONObject beginingTileJson = jsonCommand.getJSONObject("tile");
                     map.getCurrentRoom().addObject(player, beginingTileJson.getInt("x"), beginingTileJson.getInt("y"));
+                } else if (jsonCommand.getString("command").equals("map_source")) {
+                    //... have to separte the thred of listen packages to the game thread
                 }/*else if(jsonCommand.getString("command").equals("id_client")){
-                    
-                 }else if(jsonCommand.getString("command").equals("id_client")){
                     
                  }else if(jsonCommand.getString("command").equals("id_client")){
                     
