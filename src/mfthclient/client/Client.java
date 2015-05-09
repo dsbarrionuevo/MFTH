@@ -7,8 +7,8 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import mfthclient.map.Map;
 import mfthclient.player.Player;
+import mfthclient.map.room.Room;
 import org.json.JSONObject;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
@@ -29,24 +29,25 @@ public class Client implements Runnable {
     //
     private int clientId;
     //
-    private Map map;
+    private Room room;
     private Player player;
 
     public Client(Socket socket) {
         this.connected = true;
         this.socket = socket;
         this.clientId = CLIENT_ID_INVALID;
+
     }
 
     public void update(GameContainer container, int delta) throws SlickException {
-        if (map != null) {
-            map.getCurrentRoom().update(container, delta);
+        if(room!=null){
+        room.update(container, delta);
         }
     }
 
     public void render(GameContainer container, Graphics g) throws SlickException {
-        if (map != null) {
-            map.render(container, g);
+        if (room != null) {
+            room.render(container, g);
         }
     }
 
@@ -60,16 +61,20 @@ public class Client implements Runnable {
                 String jsonCommandString = input.readUTF();
                 JSONObject jsonCommand = new JSONObject(jsonCommandString);
                 if (jsonCommand.getString("command").equals("id_client")) {
+                    //set the id for client
                     this.clientId = jsonCommand.getInt("id_client");
                     log("My client id is: " + clientId);
                 } else if (jsonCommand.getString("command").equals("init")) {
-                    System.out.println("Building the map and room");
-                    //"{command:'init', id_room:" + chosenRoom.getRoomId() + ", tile: {x: " + emptyTile.getTileX() + ", y: " + emptyTile.getTileY() + "} }"
-                    //map = new Map(0);
-                    map.changeRoom(jsonCommand.getInt("id_room"));
-                    //player = new Player();
+                    System.out.println(jsonCommandString);
+                    //create room and init player position
+                    System.out.println("Building the current room");
+                    //"{command:'init', id_room:" + chosenRoom.getRoomId() + ", room_source: '" + source + "', tile: {x: " + emptyTile.getTileX() + ", y: " + emptyTile.getTileY() + "} }";
+                    player = new Player();
+                    String roomSource = jsonCommand.getString("room_source");
+                    int roomId = jsonCommand.getInt("id_room");
+                    room = new Room(roomId, roomSource);
                     JSONObject beginingTileJson = jsonCommand.getJSONObject("tile");
-                    map.getCurrentRoom().addObject(player, beginingTileJson.getInt("x"), beginingTileJson.getInt("y"));
+                    room.addObject(player, beginingTileJson.getInt("x"), beginingTileJson.getInt("y"));
                 } else if (jsonCommand.getString("command").equals("map_source")) {
                     //... have to separte the thred of listen packages to the game thread
                 }/*else if(jsonCommand.getString("command").equals("id_client")){
@@ -123,14 +128,6 @@ public class Client implements Runnable {
 
     private void log(String message) {
         CommunicationLogger.log("Me", message);
-    }
-
-    public void setMap(Map map) {
-        this.map = map;
-    }
-
-    public void setPlayer(Player player) {
-        this.player = player;
     }
 
 }

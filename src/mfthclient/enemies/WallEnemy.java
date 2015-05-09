@@ -24,11 +24,7 @@ public class WallEnemy extends Enemy {
 
     @Override
     public void update(GameContainer container, int delta) {
-        boolean stopMoving = !move(currentDirection, delta);
-        if (stopMoving) {
-            //change direction
-            this.changeDirection();
-        }
+        
     }
 
     @Override
@@ -67,29 +63,6 @@ public class WallEnemy extends Enemy {
                 break;
         }
         this.changeDirection(oppositeDirection);
-    }
-
-    private boolean move(int direction, int delta) {
-        float moveFactor = speed * (delta / 100f);
-        Vector2f prevPosition = new Vector2f(position.x, position.y);
-        if (room.canMoveTo(this, direction)) {
-            switch (direction) {
-                case (Room.DIRECTION_WEST):
-                    position.x -= moveFactor;
-                    break;
-                case (Room.DIRECTION_EAST):
-                    position.x += moveFactor;
-                    break;
-                case (Room.DIRECTION_NORTH):
-                    position.y -= moveFactor;
-                    break;
-                case (Room.DIRECTION_SOUTH):
-                    position.y += moveFactor;
-                    break;
-            }
-        }
-        //return false when stop moving
-        return !(prevPosition.x == position.x && prevPosition.y == position.y);
     }
 
     public void setRoom(Room room) {

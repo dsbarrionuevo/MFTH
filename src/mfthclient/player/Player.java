@@ -33,14 +33,12 @@ public class Player extends Movable implements Placeable {
         this.timerHitTheDoor = 0;
         this.timerToHitTheDoor = 1 * 1000;
         //
-        setupAnimations();
+        //setupAnimations();
     }
 
     @Override
     public void update(GameContainer container, int delta) {
-        move(container, delta);
-        //check if stand on door
-        checkHitDoor(delta);
+        
     }
 
     @Override
@@ -55,50 +53,6 @@ public class Player extends Movable implements Placeable {
         }
     }
 
-    private void checkHitDoor(int delta) {
-        if (this.timerHitTheDoor > this.timerToHitTheDoor) {
-            if (room.hitTheDoor(this)) {
-                this.timerHitTheDoor = 0;
-            }
-        }
-        this.timerHitTheDoor += delta;
-    }
-
-    private void move(GameContainer container, int delta) {
-        Input input = container.getInput();
-        float moveFactor = speed * (delta / 100f);
-        if (input.isKeyDown(Input.KEY_LEFT) && room.canMoveTo(this, Room.DIRECTION_WEST) && room.movingInsideCamera(this, moveFactor, Room.DIRECTION_WEST)) {
-            position.x -= moveFactor;
-            updateAnimation(delta);
-        }
-        if (input.isKeyDown(Input.KEY_RIGHT) && room.canMoveTo(this, Room.DIRECTION_EAST) && room.movingInsideCamera(this, moveFactor, Room.DIRECTION_EAST)) {
-            position.x += moveFactor;
-            updateAnimation(delta);
-        }
-        if (input.isKeyDown(Input.KEY_UP) && room.canMoveTo(this, Room.DIRECTION_NORTH) && room.movingInsideCamera(this, moveFactor, Room.DIRECTION_NORTH)) {
-            position.y -= moveFactor;
-            updateAnimation(delta);
-        }
-        if (input.isKeyDown(Input.KEY_DOWN) && room.canMoveTo(this, Room.DIRECTION_SOUTH) && room.movingInsideCamera(this, moveFactor, Room.DIRECTION_SOUTH)) {
-            position.y += moveFactor;
-            updateAnimation(delta);
-        }
-        if (input.isKeyDown(Input.KEY_LEFT)) {
-            graphic = walkingLeft;
-        } else if (input.isKeyDown(Input.KEY_RIGHT)) {
-            graphic = walkingRight;
-        } else if (input.isKeyDown(Input.KEY_UP)) {
-            graphic = walkingBack;
-        } else if (input.isKeyDown(Input.KEY_DOWN)) {
-            graphic = walkingFront;
-        }
-        if (!input.isKeyDown(Input.KEY_LEFT) && !input.isKeyDown(Input.KEY_RIGHT) && !input.isKeyDown(Input.KEY_UP) && !input.isKeyDown(Input.KEY_DOWN)) {
-            if (graphic != null) {
-                ((Animation) graphic).stop();
-                ((Animation) graphic).setCurrentFrame(0);
-            }
-        }
-    }
 
     private void updateAnimation(int delta) {
         if (graphic != null) {

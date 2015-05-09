@@ -43,12 +43,13 @@ public class ImprovedFileRoomBuildingStrategy extends RoomBuildingStrategy {
                     } else if ("door".equalsIgnoreCase(tileType.getName())) {
                         map[i][j] = new DoorTile(j, i, tileWidth, tileHeight);
                     }
+                    /*
                     try {
                         Image image = new Image("res/images/" + tileFile.getResourcePath());
                         map[i][j].setImage(image);
                     } catch (SlickException ex) {
                         Logger.getLogger(ImprovedFileRoomBuildingStrategy.class.getName()).log(Level.SEVERE, null, ex);
-                    }
+                    }*/
                 } else {
                     //shouldnt go this line...
                     map[i][j] = new BlankTile(j, i, tileWidth, tileHeight);

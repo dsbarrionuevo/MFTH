@@ -2,8 +2,6 @@ package mfthclient;
 
 import java.io.IOException;
 import java.net.Socket;
-import mfthclient.map.Map;
-import mfthclient.player.Player;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import mfthclient.camera.Camera;
@@ -39,21 +37,10 @@ public class MMORPG extends BasicGame {
         try {
             System.out.println("CLIENT");
             client = new Client(new Socket("localhost", 4646));
-
-            Map map = new Map(0);
-            Player player = new Player();
-            //map.getCurrentRoom()
-            client.setMap(map);
-            client.setPlayer(player);
             new Thread(client).start();
         } catch (IOException ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         }
-        /*map = new Map(1);
-         player = new Player();
-         map.getCurrentRoom().addObject(player, 1, 1);
-         map.getCurrentRoom().focusObject(player);
-         */
     }
 
     @Override
