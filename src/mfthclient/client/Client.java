@@ -12,6 +12,7 @@ import mfthclient.map.room.Room;
 import org.json.JSONObject;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
+import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
 
 /**
@@ -40,8 +41,25 @@ public class Client implements Runnable {
     }
 
     public void update(GameContainer container, int delta) throws SlickException {
-        if(room!=null){
-        room.update(container, delta);
+        if (room != null) {
+            room.update(container, delta);
+        }
+        Input input = container.getInput();
+        int direction = -1;
+        if (input.isKeyDown(Input.KEY_LEFT)) {
+            direction = Room.DIRECTION_WEST;
+        }
+        if (input.isKeyDown(Input.KEY_RIGHT)) {
+            direction = Room.DIRECTION_EAST;
+        }
+        if (input.isKeyDown(Input.KEY_UP)) {
+            direction = Room.DIRECTION_NORTH;
+        }
+        if (input.isKeyDown(Input.KEY_DOWN)) {
+            direction = Room.DIRECTION_SOUTH;
+        }
+        if (direction != -1) {
+            sendJson("{command:'move', client_id:" + this.clientId + ", direction:" + direction + "}");
         }
     }
 
@@ -89,6 +107,15 @@ public class Client implements Runnable {
             Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
             closeSocket();
+        }
+    }
+
+    private void sendJson(String json) {
+        try {
+            this.output.writeUTF(json);
+            this.output.flush();
+        } catch (IOException ex) {
+            Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 

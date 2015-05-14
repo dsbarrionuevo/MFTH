@@ -38,7 +38,7 @@ public class Player extends Movable implements Placeable {
 
     @Override
     public void update(GameContainer container, int delta) {
-        
+        //move(container, delta);
     }
 
     @Override
@@ -53,6 +53,25 @@ public class Player extends Movable implements Placeable {
         }
     }
 
+    private void move(GameContainer container, int delta) {
+        Input input = container.getInput();
+        int direction = -1;
+        if (input.isKeyDown(Input.KEY_LEFT)) {
+            direction = Room.DIRECTION_WEST;
+        }
+        if (input.isKeyDown(Input.KEY_RIGHT)) {
+            direction = Room.DIRECTION_EAST;
+        }
+        if (input.isKeyDown(Input.KEY_UP)) {
+            direction = Room.DIRECTION_NORTH;
+        }
+        if (input.isKeyDown(Input.KEY_DOWN)) {
+            direction = Room.DIRECTION_SOUTH;
+        }
+        if(direction!=-1){
+            
+        }
+    }
 
     private void updateAnimation(int delta) {
         if (graphic != null) {
