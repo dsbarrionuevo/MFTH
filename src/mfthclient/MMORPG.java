@@ -23,7 +23,7 @@ public class MMORPG extends BasicGame {
     private Client client;
 
     public MMORPG() throws SlickException {
-        super("MFTH");
+        super("Martin Fierro - Treasure Hunters");
         AppGameContainer container = new AppGameContainer(this);
         container.setDisplayMode(800, 600, false);
         container.setShowFPS(false);
@@ -36,7 +36,7 @@ public class MMORPG extends BasicGame {
         Camera.getInstance().setPadding(4);
         try {
             System.out.println("CLIENT");
-            client = new Client(new Socket("localhost", 4646));
+            client = new Client(new Socket(Client.DEFAULT_SERVER_HOST, Client.DEFAULT_PORT));
             new Thread(client).start();
         } catch (IOException ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);

@@ -5,6 +5,10 @@ import java.util.logging.Logger;
 import mfthclient.common.Movable;
 import mfthclient.common.Placeable;
 import mfthclient.map.room.Room;
+import static mfthclient.map.room.Room.DIRECTION_EAST;
+import static mfthclient.map.room.Room.DIRECTION_NORTH;
+import static mfthclient.map.room.Room.DIRECTION_SOUTH;
+import static mfthclient.map.room.Room.DIRECTION_WEST;
 import org.newdawn.slick.Animation;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
@@ -53,6 +57,24 @@ public class Player extends Movable implements Placeable {
         }
     }
 
+    public void move(int direction) {
+        float moveFactor = 10f / 100f;
+        switch (direction) {
+            case (DIRECTION_WEST):
+                position.x -= moveFactor;
+                break;
+            case (DIRECTION_EAST):
+                position.x += moveFactor;
+                break;
+            case (DIRECTION_NORTH):
+                position.y -= moveFactor;
+                break;
+            case (DIRECTION_SOUTH):
+                position.y += moveFactor;
+                break;
+        }
+    }
+
     private void move(GameContainer container, int delta) {
         Input input = container.getInput();
         int direction = -1;
@@ -68,8 +90,8 @@ public class Player extends Movable implements Placeable {
         if (input.isKeyDown(Input.KEY_DOWN)) {
             direction = Room.DIRECTION_SOUTH;
         }
-        if(direction!=-1){
-            
+        if (direction != -1) {
+
         }
     }
 
