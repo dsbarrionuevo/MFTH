@@ -10,6 +10,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import mfthclient.player.Player;
 import mfthclient.map.room.Room;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
@@ -100,6 +101,17 @@ public class Client implements Runnable {
                     JSONObject beginingTileJson = jsonCommand.getJSONObject("tile");
                     //assign player for room and place it on the position told by the server
                     room.addObject(player, beginingTileJson.getInt("x"), beginingTileJson.getInt("y"));
+                    //create and add all the current players in the room
+                    JSONArray jsonPlayers = jsonCommand.getJSONArray("room_players");
+                    for (int i = 0; i < jsonPlayers.length(); i++) {
+                        JSONObject jsonPlayer = jsonPlayers.getJSONObject(i);
+                        Player otherPlayer = new Player();
+                        JSONObject jsonPosition = jsonPlayer.getJSONObject("position");
+                        otherPlayer.setPosition(new Vector2f((float) jsonPosition.getDouble("x"), (float) jsonPosition.getDouble("y")));
+                        //otherPlayer.setId(jsonPlayer.getInt("id"));
+                        room.addObject(otherPlayer);
+                    }
+
                 } else if (jsonCommand.getString("command").equals("map_source")) {
                     //... have to separte the thred of listen packages to the game thread
                 } else if (jsonCommand.getString("command").equals("response_move")) {
@@ -111,9 +123,16 @@ public class Client implements Runnable {
                         player.getPosition().x = newPosition.x;
                         player.getPosition().y = newPosition.y;
                     }
-                }/*else if(jsonCommand.getString("command").equals("id_client")){
-                    
-                 }*/
+                } else if (jsonCommand.getString("command").equals("new_player")) {
+                    //sendJson("{command:'new_player',client_id:" + clientId + ",position: {x:'+" + player.getPosition().x + "',y:'+" + player.getPosition().y + "'}, room_id: " + player.getRoom().getRoomId() + "}");
+                    int roomId = jsonCommand.getInt("room_id");
+                    if (roomId == room.getRoomId()) {
+                        Player newPlayer = new Player();
+                        JSONObject beginingTileJson = jsonCommand.getJSONObject("tile");
+                        //assign player for room and place it on the position told by the server
+                        room.addObject(newPlayer, beginingTileJson.getInt("x"), beginingTileJson.getInt("y"));
+                    }
+                }
 
                 System.out.println("in loop");
             }

@@ -82,6 +82,17 @@ public class Room {
         return placeObject(placeable, tileX, tileY);
     }
     
+    public boolean addObject(Placeable placeable, Vector2f position){
+        this.objects.add(placeable);
+        placeable.setPosition(position);
+        return true;
+    }
+    
+    public boolean addObject(Placeable placeable){
+        this.objects.add(placeable);
+        return true;
+    }
+    
     public boolean placeObject(Placeable placeable, int tileX, int tileY) {
         if (tileX < 0 || tileX > room[0].length - 1 || tileY < 0 || tileY > room.length - 1) {
             return false;
