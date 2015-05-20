@@ -141,9 +141,10 @@ public class Client implements Runnable {
                         //assign player for room and place it on the position told by the server
                         room.addObject(newPlayer, beginingTileJson.getInt("x"), beginingTileJson.getInt("y"));
                     }
-                }else if (jsonCommand.getString("command").equals("player_disconnected")) {
-                    //"{command:'player_disconnected', client_id: "+clientId+"}"
-                    if(room.getPlayerById(jsonCommand.getInt("client_id"))!=null){
+                } else if (jsonCommand.getString("command").equals("player_disconnected")) {
+                    //"{command:'player_disconnected', client_id: "+clientId+", room_id: "+roomId+"}"
+                    int roomId = jsonCommand.getInt("room_id");
+                    if (room.getRoomId() == roomId) {
                         room.removeObject(room.getPlayerById(jsonCommand.getInt("client_id")));
                     }
                 }
@@ -205,7 +206,7 @@ public class Client implements Runnable {
 
     public void disconnect() {
         connected = false;
-        sendJson("{command: 'disconnect', client_id: "+clientId+", room_id: "+room.getRoomId()+"}");
+        sendJson("{command: 'disconnect', client_id: " + clientId + ", room_id: " + room.getRoomId() + "}");
         closeSocket();
     }
 
