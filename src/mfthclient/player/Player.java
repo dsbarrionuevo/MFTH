@@ -25,19 +25,26 @@ import org.newdawn.slick.geom.Vector2f;
  */
 public class Player extends Movable implements Placeable {
 
+    private static final int INVALID_ID = -1;
     private Room room;
+    private int id;
     //
     private long timerHitTheDoor;
     private long timerToHitTheDoor;
     //
     private Animation walkingFront, walkingBack, walkingLeft, walkingRight;
 
-    public Player() {
+    public Player(int id) {
         super(10f, new Vector2f(), new Rectangle(0, 0, 32, 32));
+        this.id = id;
         this.timerHitTheDoor = 0;
         this.timerToHitTheDoor = 1 * 1000;
         //
         //setupAnimations();
+    }
+
+    public Player() {
+        this(INVALID_ID);
     }
 
     @Override
@@ -164,6 +171,19 @@ public class Player extends Movable implements Placeable {
     @Override
     public Room getRoom() {
         return this.room;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return ((Player) obj).getId() == getId();
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
 }

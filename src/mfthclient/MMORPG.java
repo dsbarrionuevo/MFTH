@@ -27,6 +27,7 @@ public class MMORPG extends BasicGame {
         AppGameContainer container = new AppGameContainer(this);
         container.setDisplayMode(800, 600, false);
         container.setShowFPS(false);
+        container.setAlwaysRender(true);
         container.start();
     }
 
@@ -51,6 +52,14 @@ public class MMORPG extends BasicGame {
     @Override
     public void render(GameContainer container, Graphics g) throws SlickException {
         client.render(container, g);
+    }
+
+    @Override
+    public boolean closeRequested() {
+        System.out.println("DESCONNECT FROM SERVER");
+        client.disconnect();
+        System.exit(0); // Use this if you want to quit the app.
+        return false;
     }
 
     public static void main(String[] args) {

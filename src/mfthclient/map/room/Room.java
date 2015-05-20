@@ -5,6 +5,7 @@ import java.util.HashMap;
 import mfthclient.camera.Camera;
 import mfthclient.common.Placeable;
 import mfthclient.map.tiles.Tile;
+import mfthclient.player.Player;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.SlickException;
@@ -77,22 +78,22 @@ public class Room {
         }
     }
 
-    public boolean addObject(Placeable placeable, int tileX, int tileY){
+    public boolean addObject(Placeable placeable, int tileX, int tileY) {
         this.objects.add(placeable);
         return placeObject(placeable, tileX, tileY);
     }
-    
-    public boolean addObject(Placeable placeable, Vector2f position){
+
+    public boolean addObject(Placeable placeable, Vector2f position) {
         this.objects.add(placeable);
         placeable.setPosition(position);
         return true;
     }
-    
-    public boolean addObject(Placeable placeable){
+
+    public boolean addObject(Placeable placeable) {
         this.objects.add(placeable);
         return true;
     }
-    
+
     public boolean placeObject(Placeable placeable, int tileX, int tileY) {
         if (tileX < 0 || tileX > room[0].length - 1 || tileY < 0 || tileY > room.length - 1) {
             return false;
@@ -111,6 +112,24 @@ public class Room {
     @Override
     public boolean equals(Object obj) {
         return ((Room) obj).getRoomId() == this.getRoomId();
+    }
+
+    public Player getPlayerById(int id) {
+        for (int i = 0; i < objects.size(); i++) {
+            Placeable object = objects.get(i);
+            if (object instanceof Player) {
+                if (((Player) object).getId() == id) {
+                    return (Player) object;
+                }
+            }
+        }
+        return null;
+    }
+
+    public void removeObject(Placeable placeable) {
+        if (placeable != null) {
+            this.objects.remove(placeable);
+        }
     }
 
 }
