@@ -6,7 +6,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import mfthclient.camera.Camera;
 import mfthclient.client.Client;
-import mfthclient.client.Main;
 import org.newdawn.slick.AppGameContainer;
 import org.newdawn.slick.BasicGame;
 import org.newdawn.slick.GameContainer;
@@ -38,9 +37,9 @@ public class MMORPG extends BasicGame {
         try {
             System.out.println("CLIENT");
             client = new Client(new Socket(Client.DEFAULT_SERVER_HOST, Client.DEFAULT_PORT));
-            new Thread(client).start();
+            client.start();
         } catch (IOException ex) {
-            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(MMORPG.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -56,9 +55,9 @@ public class MMORPG extends BasicGame {
 
     @Override
     public boolean closeRequested() {
-        System.out.println("DESCONNECT FROM SERVER");
+        System.out.println("DISCONNECT FROM SERVER");
         client.disconnect();
-        System.exit(0); // Use this if you want to quit the app.
+        System.exit(0);
         return false;
     }
 

@@ -1,71 +1,71 @@
 package mfthclient.client;
 
-import com.sun.javafx.geom.Vec2d;
 import mfthclient.common.CommunicationLogger;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import mfthclient.player.Player;
 import mfthclient.map.room.Room;
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
+import mfthserver.server.commands.*;
+import mfthserver.server.*;
+import static mfthserver.server.commands.CommandFactory.*;
+import org.json.JSONObject;
 import org.newdawn.slick.geom.Vector2f;
 
 /**
  *
  * @author Barrionuevo Diego
  */
-public class Client implements Runnable {
+public class Client {
 
     public static final String DEFAULT_SERVER_HOST = "localhost";
     public static final int DEFAULT_PORT = 4646;
     private static final int CLIENT_ID_INVALID = -1;
     //
-    private Socket socket;
-    private ObjectOutputStream outputStream;
-    private ObjectInputStream inputStream;
+    private SocketController socketController;
     private boolean connected;
-    //
-    private int clientId;
     //
     private Room room;
     private Player player;
 
     public Client(Socket socket) {
         this.connected = true;
-        this.socket = socket;
-        this.clientId = CLIENT_ID_INVALID;
+        this.socketController = new SocketController(socket);
+        this.player = new Player(CLIENT_ID_INVALID);
     }
 
     public void update(GameContainer container, int delta) throws SlickException {
-        if (room != null) {
-            room.update(container, delta);
-            if (clientId != CLIENT_ID_INVALID && player != null) {
-                Input input = container.getInput();
-                int direction = -1;
-                if (input.isKeyDown(Input.KEY_LEFT)) {
-                    direction = Room.DIRECTION_WEST;
-                }
-                if (input.isKeyDown(Input.KEY_RIGHT)) {
-                    direction = Room.DIRECTION_EAST;
-                }
-                if (input.isKeyDown(Input.KEY_UP)) {
-                    direction = Room.DIRECTION_NORTH;
-                }
-                if (input.isKeyDown(Input.KEY_DOWN)) {
-                    direction = Room.DIRECTION_SOUTH;
-                }
-                if (direction != -1) {
-                    sendJson("{command:'move', client_id:" + this.clientId + ", direction:" + direction + "}");
+        try {
+            if (room != null) {
+                room.update(container, delta);
+                if (getId() != CLIENT_ID_INVALID && player != null) {
+                    Input input = container.getInput();
+                    int direction = -1;
+                    if (input.isKeyDown(Input.KEY_LEFT)) {
+                        direction = Room.DIRECTION_WEST;
+                    }
+                    if (input.isKeyDown(Input.KEY_RIGHT)) {
+                        direction = Room.DIRECTION_EAST;
+                    }
+                    if (input.isKeyDown(Input.KEY_UP)) {
+                        direction = Room.DIRECTION_NORTH;
+                    }
+                    if (input.isKeyDown(Input.KEY_DOWN)) {
+                        direction = Room.DIRECTION_SOUTH;
+                    }
+                    if (direction != -1) {
+                        send(new CommandMove(getId(), direction));
+                    }
                 }
             }
+        } catch (IOException ex) {
+            Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -75,125 +75,89 @@ public class Client implements Runnable {
         }
     }
 
-    @Override
-    public void run() {
-        try {
-            waitForResponse();
-            introduceMyself();
-            //now I hace the both channels open: to listen and speak
-            while (connected) {
-                String jsonCommandString = inputStream.readUTF();
-                JSONObject jsonCommand = new JSONObject(jsonCommandString);
-                if (jsonCommand.getString("command").equals("id_client")) {
-                    //set the id for client
-                    this.clientId = jsonCommand.getInt("id_client");
-                    log("My client id is: " + clientId);
-                } else if (jsonCommand.getString("command").equals("init")) {
-                    System.out.println(jsonCommandString);
-                    //create room and init player position
-                    System.out.println("Building the current room");
-                    //"{command:'init', id_room:" + chosenRoom.getRoomId() + ", room_source: '" + source + "', tile: {x: " + emptyTile.getTileX() + ", y: " + emptyTile.getTileY() + "} }";
-                    player = new Player(clientId);
-                    String roomSource = jsonCommand.getString("room_source");
-                    int roomId = jsonCommand.getInt("id_room");
-                    //build the room (for firest time only)...
-                    room = new Room(roomId, roomSource);
-                    JSONObject beginingTileJson = jsonCommand.getJSONObject("tile");
-                    //assign player for room and place it on the position told by the server
-                    room.addObject(player, beginingTileJson.getInt("x"), beginingTileJson.getInt("y"));
-                    //create and add all the current players in the room
-                    JSONArray jsonPlayers = jsonCommand.getJSONArray("room_players");
-                    for (int i = 0; i < jsonPlayers.length(); i++) {
-                        JSONObject jsonPlayer = jsonPlayers.getJSONObject(i);
-                        Player otherPlayer = new Player(jsonPlayer.getInt("id"));
-                        JSONObject jsonPosition = jsonPlayer.getJSONObject("position");
-                        otherPlayer.setPosition(new Vector2f((float) jsonPosition.getDouble("x"), (float) jsonPosition.getDouble("y")));
-                        room.addObject(otherPlayer);
-                    }
-                } else if (jsonCommand.getString("command").equals("map_source")) {
-                    //... have to separte the thred of listen packages to the game thread
-                } else if (jsonCommand.getString("command").equals("response_move")) {
-                    int id = jsonCommand.getInt("client_id");
-                    boolean canMove = jsonCommand.getBoolean("can_move");
-                    if (canMove) {
-                        //player.move(direction);
-                        Player movingPlayer = room.getPlayerById(id);
-                        if (movingPlayer != null) {//that is, we are in the same room
-                            JSONObject position = jsonCommand.getJSONObject("position");
-                            Vector2f newPosition = new Vector2f((float) position.getDouble("x"), (float) position.getDouble("y"));
-                            movingPlayer.getPosition().x = newPosition.x;
-                            movingPlayer.getPosition().y = newPosition.y;
+    public void start() {
+        new Thread(new Runnable() {
+
+            @Override
+            public void run() {
+                try {
+                    socketController.handshake(SocketController.HANDSHAKE_ORDER_FIRST_LISTEN_THEN_SPEAK);
+                    while (connected) {
+                        Command command = socketController.receive();
+                        switch (command.getType()) {
+                            case (COMMAND_CLIENT_ID):
+                                CommandSetupClientId commandSetupClientId = (CommandSetupClientId) command;
+                                player.setId(commandSetupClientId.getClientId());
+                                break;
+                            case (COMMAND_INIT_PLAYER):
+                                CommandInitPlayer commandInitPlayer = (CommandInitPlayer) command;
+                                //create room and init player position
+                                //??? esto ya lo hice antes...
+                                player = new Player(getId());
+                                //build the room (for first time only)...
+                                room = new Room(commandInitPlayer.getRoomId(), commandInitPlayer.getRoomSource());
+                                //is it necesary?
+                                player.setRoom(room);
+                                //assign player for room and place it on the position told by the server
+                                room.addObject(player, commandInitPlayer.getTileX(), commandInitPlayer.getTileY());
+                                //create and add all the current players in the room
+                                ArrayList<mfthserver.player.Player> otherPlayers = commandInitPlayer.getPlayers();
+                                for (int i = 0; i < otherPlayers.size(); i++) {
+                                    Player otherPlayer = new Player(otherPlayers.get(i).getId());
+                                    otherPlayer.setPosition(otherPlayers.get(i).getPosition());
+                                    room.addObject(otherPlayer);
+                                }
+                                break;
+                            case (COMMAND_MOVE_REPSONSE):
+                                CommandMoveResponse commandMoveResponse = (CommandMoveResponse) command;
+                                if (commandMoveResponse.isCanMove()) {
+                                    Player movingPlayer = room.getPlayerById(commandMoveResponse.getClientId());
+                                    if (movingPlayer != null) {//that is, we are in the same room
+                                        Vector2f newPosition = commandMoveResponse.getPosition();
+                                        movingPlayer.getPosition().x = newPosition.x;
+                                        movingPlayer.getPosition().y = newPosition.y;
+                                    }
+                                }
+                                break;
+                            case (COMMAND_NEW_PLAYER):
+                                CommandNewPlayer commandNewPlayer = (CommandNewPlayer) command;
+                                if (commandNewPlayer.getRoomId() == room.getRoomId()) {
+                                    Player newPlayer = new Player(commandNewPlayer.getClientId());
+                                    //assign player for room and place it on the position told by the server
+                                    room.addObject(newPlayer, commandNewPlayer.getTileX(), commandNewPlayer.getTileY());
+                                }
+                                break;
+                            case (COMMAND_DISCONNECT_RESPONSE):
+                                CommandDisconnectResponse commandDisconnectResponse = (CommandDisconnectResponse) command;
+                                if (room.getRoomId() == commandDisconnectResponse.getRoomId()) {
+                                    room.removeObject(room.getPlayerById(commandDisconnectResponse.getClientId()));
+                                }
+                                break;
                         }
-                        /*
-                         JSONObject position = jsonCommand.getJSONObject("position");
-                         Vector2f newPosition = new Vector2f((float) position.getDouble("x"), (float) position.getDouble("y"));
-                         player.getPosition().x = newPosition.x;
-                         player.getPosition().y = newPosition.y;
-                         */
                     }
-                } else if (jsonCommand.getString("command").equals("new_player")) {
-                    //sendJson("{command:'new_player',client_id:" + clientId + ",position: {x:'+" + player.getPosition().x + "',y:'+" + player.getPosition().y + "'}, room_id: " + player.getRoom().getRoomId() + "}");
-                    int roomId = jsonCommand.getInt("room_id");
-                    int id = jsonCommand.getInt("client_id");
-                    if (roomId == room.getRoomId()) {
-                        Player newPlayer = new Player(id);
-                        JSONObject beginingTileJson = jsonCommand.getJSONObject("tile");
-                        //assign player for room and place it on the position told by the server
-                        room.addObject(newPlayer, beginingTileJson.getInt("x"), beginingTileJson.getInt("y"));
-                    }
-                } else if (jsonCommand.getString("command").equals("player_disconnected")) {
-                    //"{command:'player_disconnected', client_id: "+clientId+", room_id: "+roomId+"}"
-                    int roomId = jsonCommand.getInt("room_id");
-                    if (room.getRoomId() == roomId) {
-                        room.removeObject(room.getPlayerById(jsonCommand.getInt("client_id")));
-                    }
+                } catch (IOException ex) {
+                    Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
                 }
-                System.out.println("in loop");
             }
-        } catch (IOException ex) {
-            Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
-        } finally {
-            closeSocket();
         }
-    }
-
-    private void sendJson(String json) {
-        try {
-            this.outputStream.writeUTF(json);
-            this.outputStream.flush();
-        } catch (IOException ex) {
-            Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-
-    private void introduceMyself() throws IOException {
-        this.outputStream = new ObjectOutputStream(socket.getOutputStream());
-        String greeting = "Hello server!, I'm an ordinary client.";
-        this.outputStream.writeUTF(greeting);
-        this.outputStream.flush();
-        System.out.println("Me: " + greeting);
-    }
-
-    private void waitForResponse() throws IOException {
-        this.inputStream = new ObjectInputStream(socket.getInputStream());
-        String response = inputStream.readUTF();
-        System.out.println("Server: " + response);
+        ).start();
     }
 
     private void closeSocket() {
         try {
-            if (outputStream != null) {
-                outputStream.close();
-            }
-            if (inputStream != null) {
-                inputStream.close();
-            }
-            if (socket != null) {
-                socket.close();
-            }
+            socketController.close();
         } catch (IOException ex) {
-            Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Client.class
+                    .getName()).log(Level.SEVERE, null, ex);
         }
+    }
+
+    public void send(Command command) throws IOException {
+        socketController.send(command);
+    }
+
+    private int getId() {
+        return player.getId();
     }
 
     private void serverLog(String message) {
@@ -205,9 +169,13 @@ public class Client implements Runnable {
     }
 
     public void disconnect() {
-        connected = false;
-        sendJson("{command: 'disconnect', client_id: " + clientId + ", room_id: " + room.getRoomId() + "}");
-        closeSocket();
+        try {
+            connected = false;
+            send(new CommandDisconnect(getId(), player.getRoom().getRoomId()));
+            closeSocket();
+        } catch (IOException ex) {
+            Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
 }
