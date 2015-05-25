@@ -2,6 +2,7 @@ package mfthclient.client;
 
 import mfthclient.common.CommunicationLogger;
 import java.io.IOException;
+import java.net.DatagramSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.logging.Level;
@@ -15,7 +16,6 @@ import org.newdawn.slick.SlickException;
 import mfthserver.server.commands.*;
 import mfthserver.server.*;
 import static mfthserver.server.commands.CommandFactory.*;
-import org.json.JSONObject;
 import org.newdawn.slick.geom.Vector2f;
 
 /**
@@ -25,18 +25,21 @@ import org.newdawn.slick.geom.Vector2f;
 public class Client {
 
     public static final String DEFAULT_SERVER_HOST = "localhost";
-    public static final int DEFAULT_PORT = 4646;
+    public static final int DEFAULT_SERVER_PORT = 4646;
+    public static final int DEFAULT_LISTEN_UDP_PORT = 5656;
     private static final int CLIENT_ID_INVALID = -1;
     //
     private SocketController socketController;
+    private DatagramController datagramController;
     private boolean connected;
     //
     private Room room;
     private Player player;
 
-    public Client(Socket socket) {
+    public Client(Socket socket, DatagramSocket datagramSocket) {
         this.connected = true;
         this.socketController = new SocketController(socket);
+        this.datagramController = new DatagramController(datagramSocket);
         this.player = new Player(CLIENT_ID_INVALID);
     }
 
@@ -60,7 +63,7 @@ public class Client {
                         direction = Room.DIRECTION_SOUTH;
                     }
                     if (direction != -1) {
-                        send(new CommandMove(getId(), direction));
+                        sendDatagram(new CommandMove(getId(), direction));
                     }
                 }
             }
@@ -76,12 +79,18 @@ public class Client {
     }
 
     public void start() {
+        //TCP listen thread
         new Thread(new Runnable() {
 
             @Override
             public void run() {
                 try {
                     socketController.handshake(SocketController.HANDSHAKE_ORDER_FIRST_LISTEN_THEN_SPEAK);
+                    //set address and port of the server to send datagrams with UDP
+                    datagramController.setReceptorAddress(socketController.getSocket().getInetAddress());
+                    datagramController.setReceptorPort(DEFAULT_SERVER_PORT);
+                    //send the port i'm listening to in UDP
+                    sendPacket(new CommandNetworkInformation(datagramController.getSocket().getLocalPort()));
                     while (connected) {
                         Command command = socketController.receive();
                         switch (command.getType()) {
@@ -109,15 +118,17 @@ public class Client {
                                 }
                                 break;
                             case (COMMAND_MOVE_REPSONSE):
-                                CommandMoveResponse commandMoveResponse = (CommandMoveResponse) command;
-                                if (commandMoveResponse.isCanMove()) {
-                                    Player movingPlayer = room.getPlayerById(commandMoveResponse.getClientId());
-                                    if (movingPlayer != null) {//that is, we are in the same room
-                                        Vector2f newPosition = commandMoveResponse.getPosition();
-                                        movingPlayer.getPosition().x = newPosition.x;
-                                        movingPlayer.getPosition().y = newPosition.y;
-                                    }
-                                }
+                                System.out.println("miss");
+                                /*
+                                 CommandMoveResponse commandMoveResponse = (CommandMoveResponse) command;
+                                 if (commandMoveResponse.isCanMove()) {
+                                 Player movingPlayer = room.getPlayerById(commandMoveResponse.getClientId());
+                                 if (movingPlayer != null) {//that is, we are in the same room
+                                 Vector2f newPosition = commandMoveResponse.getPosition();
+                                 movingPlayer.getPosition().x = newPosition.x;
+                                 movingPlayer.getPosition().y = newPosition.y;
+                                 }
+                                 }*/
                                 break;
                             case (COMMAND_NEW_PLAYER):
                                 CommandNewPlayer commandNewPlayer = (CommandNewPlayer) command;
@@ -139,6 +150,39 @@ public class Client {
                     Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
+
+        }
+        ).start();
+
+        //UDP listen thread
+        new Thread(new Runnable() {
+
+            @Override
+            public void run() {
+                try {
+                    //datagramController.isReady() is necesary to listen?...
+                    //if (datagramController.isReady()) {
+                    while (connected) {
+                        Command command = datagramController.receive();
+                        switch (command.getType()) {
+                            case (COMMAND_MOVE_REPSONSE):
+                                CommandMoveResponse commandMoveResponse = (CommandMoveResponse) command;
+                                if (commandMoveResponse.isCanMove()) {
+                                    Player movingPlayer = room.getPlayerById(commandMoveResponse.getClientId());
+                                    if (movingPlayer != null) {//that is, we are in the same room
+                                        Vector2f newPosition = commandMoveResponse.getPosition();
+                                        movingPlayer.getPosition().x = newPosition.x;
+                                        movingPlayer.getPosition().y = newPosition.y;
+                                    }
+                                }
+                                break;
+                        }
+                    }
+                    //}
+                } catch (IOException ex) {
+                    Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
         }
         ).start();
     }
@@ -152,26 +196,24 @@ public class Client {
         }
     }
 
-    public void send(Command command) throws IOException {
+    public void sendPacket(Command command) throws IOException {
         socketController.send(command);
+    }
+
+    public void sendDatagram(Command command) throws IOException {
+        if (datagramController.isReady()) {
+            datagramController.send(command);
+        }
     }
 
     private int getId() {
         return player.getId();
     }
 
-    private void serverLog(String message) {
-        CommunicationLogger.log("Server", message);
-    }
-
-    private void log(String message) {
-        CommunicationLogger.log("Me", message);
-    }
-
     public void disconnect() {
         try {
             connected = false;
-            send(new CommandDisconnect(getId(), player.getRoom().getRoomId()));
+            sendPacket(new CommandDisconnect(getId(), player.getRoom().getRoomId()));
             closeSocket();
         } catch (IOException ex) {
             Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);

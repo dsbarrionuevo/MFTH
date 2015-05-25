@@ -1,11 +1,15 @@
 package mfthclient;
 
 import java.io.IOException;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import mfthclient.camera.Camera;
 import mfthclient.client.Client;
+import static mfthclient.client.Client.DEFAULT_LISTEN_UDP_PORT;
+import mfthserver.server.CommunicationUtility;
 import org.newdawn.slick.AppGameContainer;
 import org.newdawn.slick.BasicGame;
 import org.newdawn.slick.GameContainer;
@@ -36,7 +40,9 @@ public class MMORPG extends BasicGame {
         Camera.getInstance().setPadding(4);
         try {
             System.out.println("CLIENT");
-            client = new Client(new Socket(Client.DEFAULT_SERVER_HOST, Client.DEFAULT_PORT));
+            client = new Client(
+                    new Socket(Client.DEFAULT_SERVER_HOST, Client.DEFAULT_SERVER_PORT),
+                    new DatagramSocket(findFreeUDPPort(), InetAddress.getByName("localhost")));
             client.start();
         } catch (IOException ex) {
             Logger.getLogger(MMORPG.class.getName()).log(Level.SEVERE, null, ex);
@@ -59,6 +65,15 @@ public class MMORPG extends BasicGame {
         client.disconnect();
         System.exit(0);
         return false;
+    }
+
+    private int findFreeUDPPort() {
+        int portToTry = DEFAULT_LISTEN_UDP_PORT;
+        while (!CommunicationUtility.isPortAvailable(portToTry)) {
+            portToTry++;
+        }
+        System.out.println("port UDP chosen: " + portToTry);
+        return portToTry;
     }
 
     public static void main(String[] args) {
